@@ -113,6 +113,9 @@ namespace System.Diagnostics.CodeAnalysis
         /// </summary>
         public DynamicallyAccessedMemberTypes MemberTypes { get; }
     }
+    sealed class NotNullAttribute : Attribute
+    { }
+
     internal sealed class DisallowNullAttribute : Attribute
     { }
 
