@@ -1,15 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35506.116 d17.12
+VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlSerializer2", "XmlSerializer2\XmlSerializer2.csproj", "{73C85D40-34B4-4AFE-AD1D-281007BEB4FD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlSerializer2.CodeFixes", "XmlSerializer2.CodeFixes\XmlSerializer2.CodeFixes.csproj", "{B86596E7-2FE0-4E35-A0DF-D585447211E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlSerializer2", "src\XmlSerializer2\XmlSerializer2.csproj", "{CD38CD95-1CF2-8760-9D4D-D2B4AB0DC70D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlSerializer2.Package", "XmlSerializer2.Package\XmlSerializer2.Package.csproj", "{8C2FCCF8-9467-4D2D-B1EE-663A31E83E19}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlSerializer2.Package", "src\XmlSerializer2.Package\XmlSerializer2.Package.csproj", "{BEEFEB95-6A30-2E95-CCB7-803C83E72F6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlSerializer2.Test", "XmlSerializer2.Test\XmlSerializer2.Test.csproj", "{87EB6437-764A-4FA7-B004-42B528E1D484}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlSerializer2.Test", "tests\XmlSerializer2.Test\XmlSerializer2.Test.csproj", "{9FADF29B-192C-DBE8-6012-1F8C9AAD0E92}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E61EFE33-46C8-4F28-9307-60684526D513}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		nuget.config = nuget.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,24 +26,28 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{73C85D40-34B4-4AFE-AD1D-281007BEB4FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{73C85D40-34B4-4AFE-AD1D-281007BEB4FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{73C85D40-34B4-4AFE-AD1D-281007BEB4FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{73C85D40-34B4-4AFE-AD1D-281007BEB4FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B86596E7-2FE0-4E35-A0DF-D585447211E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B86596E7-2FE0-4E35-A0DF-D585447211E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B86596E7-2FE0-4E35-A0DF-D585447211E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B86596E7-2FE0-4E35-A0DF-D585447211E0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8C2FCCF8-9467-4D2D-B1EE-663A31E83E19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8C2FCCF8-9467-4D2D-B1EE-663A31E83E19}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8C2FCCF8-9467-4D2D-B1EE-663A31E83E19}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8C2FCCF8-9467-4D2D-B1EE-663A31E83E19}.Release|Any CPU.Build.0 = Release|Any CPU
-		{87EB6437-764A-4FA7-B004-42B528E1D484}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{87EB6437-764A-4FA7-B004-42B528E1D484}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{87EB6437-764A-4FA7-B004-42B528E1D484}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{87EB6437-764A-4FA7-B004-42B528E1D484}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD38CD95-1CF2-8760-9D4D-D2B4AB0DC70D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD38CD95-1CF2-8760-9D4D-D2B4AB0DC70D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD38CD95-1CF2-8760-9D4D-D2B4AB0DC70D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD38CD95-1CF2-8760-9D4D-D2B4AB0DC70D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEEFEB95-6A30-2E95-CCB7-803C83E72F6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEEFEB95-6A30-2E95-CCB7-803C83E72F6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEEFEB95-6A30-2E95-CCB7-803C83E72F6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEEFEB95-6A30-2E95-CCB7-803C83E72F6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FADF29B-192C-DBE8-6012-1F8C9AAD0E92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FADF29B-192C-DBE8-6012-1F8C9AAD0E92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FADF29B-192C-DBE8-6012-1F8C9AAD0E92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FADF29B-192C-DBE8-6012-1F8C9AAD0E92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CD38CD95-1CF2-8760-9D4D-D2B4AB0DC70D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{BEEFEB95-6A30-2E95-CCB7-803C83E72F6D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9FADF29B-192C-DBE8-6012-1F8C9AAD0E92} = {E61EFE33-46C8-4F28-9307-60684526D513}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4DB85DBB-AC7C-46F6-A02D-76338D1DF827}
 	EndGlobalSection
 EndGlobal

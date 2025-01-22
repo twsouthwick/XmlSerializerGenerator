@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>13</LangVersion>
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
+  </PropertyGroup>
+</Project>

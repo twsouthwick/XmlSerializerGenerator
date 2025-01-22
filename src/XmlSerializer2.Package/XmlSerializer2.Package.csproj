@@ -27,7 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\XmlSerializer2.CodeFixes\XmlSerializer2.CodeFixes.csproj" />
     <ProjectReference Include="..\XmlSerializer2\XmlSerializer2.csproj" />
   </ItemGroup>
 
