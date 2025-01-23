@@ -20,4 +20,6 @@ internal static class SR
     public const string XmlIllegalTypedTextAttribute = "";
     public const string XmlSerializableRootDupName = "";
     public const string XmlSerializableNameMissing1 = "";
+    public const string XmlInternalErrorDetails = "";
+    public const string XmlInvalidIdentifier = "";
 }

@@ -12,13 +12,12 @@ using System.Xml.Serialization;
 using IndentedWriter = System.CodeDom.Compiler.IndentedTextWriter;
 
 namespace System.Xml.Serialization;
-
 internal class XmlSerializationCodeGen
 {
     private readonly IndentedWriter _writer;
     private int _nextMethodNumber;
     private readonly Hashtable _methodNames = new Hashtable();
-    //private readonly ReflectionAwareCodeGen _raCodeGen;
+    private readonly ReflectionAwareCodeGen _raCodeGen;
     private readonly TypeScope[] _scopes;
     private readonly TypeDesc? _stringTypeDesc;
     private readonly TypeDesc? _qnameTypeDesc;
@@ -38,14 +37,14 @@ internal class XmlSerializationCodeGen
             _stringTypeDesc = scopes[0].GetTypeDesc(typeof(string));
             _qnameTypeDesc = scopes[0].GetTypeDesc(typeof(XmlQualifiedName));
         }
-        //_raCodeGen = new ReflectionAwareCodeGen(writer);
+        _raCodeGen = new ReflectionAwareCodeGen(writer);
         _className = className;
         _access = access;
     }
 
     internal IndentedWriter Writer { get { return _writer; } }
     internal int NextMethodNumber { get { return _nextMethodNumber; } set { _nextMethodNumber = value; } }
-    //internal ReflectionAwareCodeGen RaCodeGen { get { return _raCodeGen; } }
+    internal ReflectionAwareCodeGen RaCodeGen { get { return _raCodeGen; } }
     internal TypeDesc? StringTypeDesc { get { return _stringTypeDesc; } }
     internal TypeDesc? QnameTypeDesc { get { return _qnameTypeDesc; } }
     internal string ClassName { get { return _className; } }
@@ -91,45 +90,7 @@ internal class XmlSerializationCodeGen
 
     internal void WriteQuotedCSharpString(string? value)
     {
-        WriteQuotedCSharpString(_writer, value);
-    }
-
-    internal static void WriteQuotedCSharpString(IndentedWriter writer, string? value)
-    {
-        if (value == null)
-        {
-            writer.Write("null");
-            return;
-        }
-        writer.Write("@\"");
-        foreach (char ch in value)
-        {
-            if (ch < 32)
-            {
-                if (ch == '\r')
-                    writer.Write("\\r");
-                else if (ch == '\n')
-                    writer.Write("\\n");
-                else if (ch == '\t')
-                    writer.Write("\\t");
-                else
-                {
-                    byte b = (byte)ch;
-                    writer.Write("\\x");
-                    writer.Write(HexConverter.ToCharUpper(b >> 4));
-                    writer.Write(HexConverter.ToCharUpper(b));
-                }
-            }
-            else if (ch == '\"')
-            {
-                writer.Write("\"\"");
-            }
-            else
-            {
-                writer.Write(ch);
-            }
-        }
-        writer.Write("\"");
+        _raCodeGen.WriteQuotedCSharpString(value);
     }
 
     internal void GenerateHashtableGetBegin(string privateName, string publicName)
@@ -179,7 +140,7 @@ internal class XmlSerializationCodeGen
         _writer.Indent--;
         _writer.WriteLine("}");
     }
-    internal void GeneratePublicMethods(string privateName, string publicName, string?[] methods, XmlMapping2[] xmlMappings)
+    internal void GeneratePublicMethods(string privateName, string publicName, string?[] methods, XmlMapping[] xmlMappings)
     {
         GenerateHashtableGetBegin(privateName, publicName);
         if (methods != null && methods.Length != 0 && xmlMappings != null && xmlMappings.Length == methods.Length)
@@ -189,7 +150,7 @@ internal class XmlSerializationCodeGen
                 if (methods[i] == null)
                     continue;
                 _writer.Write("_tmp[");
-                WriteQuotedCSharpString(xmlMappings[i].ElementName);
+                WriteQuotedCSharpString(xmlMappings[i].Key);
                 _writer.Write("] = ");
                 WriteQuotedCSharpString(methods[i]);
                 _writer.WriteLine(";");
@@ -198,7 +159,7 @@ internal class XmlSerializationCodeGen
         GenerateHashtableGetEnd(privateName);
     }
 
-    internal void GenerateSupportedTypes(ITypeDescType?[] types)
+    internal void GenerateSupportedTypes(Type?[] types)
     {
         _writer.Write("public override ");
         _writer.Write(typeof(bool).FullName);
@@ -209,7 +170,7 @@ internal class XmlSerializationCodeGen
         Hashtable uniqueTypes = new Hashtable();
         for (int i = 0; i < types.Length; i++)
         {
-            var type = types[i];
+            Type? type = types[i];
 
             if (type == null)
                 continue;
@@ -217,13 +178,13 @@ internal class XmlSerializationCodeGen
                 continue;
             if (uniqueTypes[type] != null)
                 continue;
-            if (type.IsGenericType)
+            if (DynamicAssemblies.IsTypeDynamic(type))
                 continue;
-            //if (type.ContainsGenericParameters && DynamicAssemblies.IsTypeDynamic(type.GetGenericArguments()))
-            //continue;
+            if (type.IsGenericType || type.ContainsGenericParameters && DynamicAssemblies.IsTypeDynamic(type.GetGenericArguments()))
+                continue;
             uniqueTypes[type] = type;
             _writer.Write("if (type == typeof(");
-            _writer.Write(GetCSharpName(type));
+            _writer.Write(CodeIdentifier.GetCSharpName(type));
             _writer.WriteLine(")) return true;");
         }
         _writer.WriteLine("return false;");
@@ -238,7 +199,7 @@ internal class XmlSerializationCodeGen
 
         _writer.WriteLine();
         _writer.Write("public abstract class ");
-        _writer.Write(GetCSharpName(baseSerializer));
+        _writer.Write(CodeIdentifier.GetCSharpName(baseSerializer));
         _writer.Write(" : ");
         _writer.Write(typeof(System.Xml.Serialization.XmlSerializer).FullName);
         _writer.WriteLine(" {");
@@ -270,14 +231,14 @@ internal class XmlSerializationCodeGen
         return baseSerializer;
     }
 
-    internal string GenerateTypedSerializer(string? readMethod, string? writeMethod, XmlMapping2 mapping, CodeIdentifiers classes, string baseSerializer, string readerClass, string writerClass)
+    internal string GenerateTypedSerializer(string? readMethod, string? writeMethod, XmlMapping mapping, CodeIdentifiers classes, string baseSerializer, string readerClass, string writerClass)
     {
         string serializerName = CodeIdentifier.MakeValid(Accessor.UnescapeName(mapping.Accessor.Mapping!.TypeDesc!.Name));
         serializerName = classes.AddUnique($"{serializerName}Serializer", mapping);
 
         _writer.WriteLine();
         _writer.Write("public sealed class ");
-        _writer.Write(GetCSharpName(serializerName));
+        _writer.Write(CodeIdentifier.GetCSharpName(serializerName));
         _writer.Write(" : ");
         _writer.Write(baseSerializer);
         _writer.WriteLine(" {");
@@ -318,7 +279,7 @@ internal class XmlSerializationCodeGen
             _writer.Write(")writer).");
             _writer.Write(writeMethod);
             _writer.Write("(");
-            if (mapping is XmlMembersMapping2)
+            if (mapping is XmlMembersMapping)
             {
                 _writer.Write("(object[])");
             }
@@ -364,7 +325,7 @@ internal class XmlSerializationCodeGen
     }
 
     //GenerateGetSerializer(serializers, xmlMappings);
-    private void GenerateGetSerializer(Hashtable serializers, XmlMapping2[] xmlMappings)
+    private void GenerateGetSerializer(Hashtable serializers, XmlMapping[] xmlMappings)
     {
         _writer.Write("public override ");
         _writer.Write(typeof(System.Xml.Serialization.XmlSerializer).FullName);
@@ -375,21 +336,19 @@ internal class XmlSerializationCodeGen
 
         for (int i = 0; i < xmlMappings.Length; i++)
         {
-            if (xmlMappings[i] is XmlTypeMapping2)
+            if (xmlMappings[i] is XmlTypeMapping)
             {
-                var type = xmlMappings[i].Accessor.Mapping!.TypeDesc!.Type;
+                Type? type = xmlMappings[i].Accessor.Mapping!.TypeDesc!.Type;
                 if (type == null)
                     continue;
                 if (!type.IsPublic && !type.IsNestedPublic)
                     continue;
-                //if (DynamicAssemblies.IsTypeDynamic(type))
-                //continue;
-                if (type.IsGenericType)
+                if (DynamicAssemblies.IsTypeDynamic(type))
                     continue;
-                //if (type.ContainsGenericParameters && DynamicAssemblies.IsTypeDynamic(type.GetGenericArguments()))
-                //continue;
+                if (type.IsGenericType || type.ContainsGenericParameters && DynamicAssemblies.IsTypeDynamic(type.GetGenericArguments()))
+                    continue;
                 _writer.Write("if (type == typeof(");
-                _writer.Write(GetCSharpName(type));
+                _writer.Write(CodeIdentifier.GetCSharpName(type));
                 _writer.Write(")) return new ");
                 _writer.Write((string?)serializers[xmlMappings[i].Key!]);
                 _writer.WriteLine("();");
@@ -400,7 +359,7 @@ internal class XmlSerializationCodeGen
         _writer.WriteLine("}");
     }
 
-    internal void GenerateSerializerContract(XmlMapping2[] xmlMappings, ITypeDescType?[] types, string readerType, string?[] readMethods, string writerType, string?[] writerMethods, Hashtable serializers)
+    internal void GenerateSerializerContract(XmlMapping[] xmlMappings, Type?[] types, string readerType, string?[] readMethods, string writerType, string?[] writerMethods, Hashtable serializers)
     {
         _writer.WriteLine();
         _writer.Write("public class XmlSerializerContract : global::");
@@ -435,137 +394,5 @@ internal class XmlSerializationCodeGen
         if (mapping is SerializableMapping)
             return ((SerializableMapping)mapping).IsAny;
         return mapping.TypeDesc!.CanBeElementValue;
-    }
-
-    internal static string GetCSharpName(string name)
-    {
-        return EscapeKeywords(name.Replace('+', '.'));
-    }
-
-    internal static string GetCSharpName(ITypeDescType t)
-    {
-        int rank = 0;
-        while (t.IsArray)
-        {
-            t = t.GetElementType()!;
-            rank++;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.Append("global::");
-        string? ns = t.Namespace;
-        if (ns != null && ns.Length > 0)
-        {
-            string[] parts = ns.Split('.');
-            for (int i = 0; i < parts.Length; i++)
-            {
-                EscapeKeywords(parts[i], sb);
-                sb.Append('.');
-            }
-        }
-
-        var arguments = t.IsGenericType || t.ContainsGenericParameters ? t.GetGenericArguments() : [];
-        GetCSharpName(t, arguments, 0, sb);
-        for (int i = 0; i < rank; i++)
-        {
-            sb.Append("[]");
-        }
-        return sb.ToString();
-    }
-
-    private static int GetCSharpName(ITypeDescType t, ITypeDescType[] parameters, int index, StringBuilder sb)
-    {
-        if (t.DeclaringType != null && t.DeclaringType != t)
-        {
-            index = GetCSharpName(t.DeclaringType, parameters, index, sb);
-            sb.Append('.');
-        }
-        string name = t.Name;
-        int nameEnd = name.IndexOf('`');
-        if (nameEnd < 0)
-        {
-            nameEnd = name.IndexOf('!');
-        }
-        if (nameEnd > 0)
-        {
-            EscapeKeywords(name.Substring(0, nameEnd), sb);
-            sb.Append('<');
-            int arguments = int.Parse(name.AsSpan(nameEnd + 1).ToString(), provider: CultureInfo.InvariantCulture) + index;
-            for (; index < arguments; index++)
-            {
-                sb.Append(GetCSharpName(parameters[index]));
-                if (index < arguments - 1)
-                {
-                    sb.Append(',');
-                }
-            }
-            sb.Append('>');
-        }
-        else
-        {
-            EscapeKeywords(name, sb);
-        }
-        return index;
-    }
-
-    private static readonly char[] s_identifierSeparators = new char[] { '.', ',', '<', '>' };
-
-    private static void EscapeKeywords(string identifier, StringBuilder sb)
-    {
-        if (string.IsNullOrEmpty(identifier))
-            return;
-        int arrayCount = 0;
-        while (identifier.EndsWith("[]", StringComparison.Ordinal))
-        {
-            arrayCount++;
-            identifier = identifier.Substring(0, identifier.Length - 2);
-        }
-        if (identifier.Length > 0)
-        {
-            CheckValidIdentifier(identifier);
-            identifier = CreateEscapedIdentifier(identifier);
-            sb.Append(identifier);
-        }
-        for (int i = 0; i < arrayCount; i++)
-        {
-            sb.Append("[]");
-        }
-    }
-
-    internal static string CreateEscapedIdentifier(string ident)
-    {
-        // TODO: implement
-        return ident;
-    }
-
-    internal static void CheckValidIdentifier(string ident)
-    {
-        // TODO implement
-        //if (!CSharphe.IsValidLanguageIndependentIdentifier(ident))
-        //throw new ArgumentException(SR.Format(SR.XmlInvalidIdentifier, ident), nameof(ident));
-    }
-
-    [return: NotNullIfNotNull(nameof(identifier))]
-    private static string? EscapeKeywords(string? identifier)
-    {
-        if (string.IsNullOrEmpty(identifier)) return identifier;
-        string originalIdentifier = identifier!;
-        string[] names = identifier!.Split(s_identifierSeparators);
-        StringBuilder sb = new StringBuilder();
-        int separator = -1;
-        for (int i = 0; i < names.Length; i++)
-        {
-            if (separator >= 0)
-            {
-                sb.Append(originalIdentifier[separator]);
-            }
-            separator++;
-            separator += names[i].Length;
-            string escapedName = names[i].Trim();
-            EscapeKeywords(escapedName, sb);
-        }
-        if (sb.Length != originalIdentifier.Length)
-            return sb.ToString();
-        return originalIdentifier;
     }
 }
