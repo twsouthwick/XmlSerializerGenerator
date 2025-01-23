@@ -7,38 +7,16 @@ using System.Text;
 
 namespace XmlSerializer2;
 
-internal class CodeIdentifier
+internal class CodeIdentifier2
 {
     internal const int MaxIdentifierLength = 511;
-
-    [Obsolete("This class should never get constructed as it contains only static methods.")]
-    public CodeIdentifier()
-    {
-    }
 
     /// <devdoc>
     ///    <para>[To be supplied.]</para>
     /// </devdoc>
     public static string MakePascal(string identifier)
     {
-        ArgumentNullException.ThrowIfNull(identifier);
-        identifier = MakeValid(identifier);
-        if (identifier.Length <= 2)
-        {
-            return identifier.ToUpperInvariant();
-        }
-        else if (char.IsLower(identifier[0]))
-        {
-            return string.Create(identifier.Length, identifier, static (buffer, identifier) =>
-            {
-                identifier.CopyTo(buffer);
-                buffer[0] = char.ToUpperInvariant(buffer[0]); // convert only first char to uppercase; leave all else as-is
-            });
-        }
-        else
-        {
-            return identifier;
-        }
+        return System.Xml.Serialization.CodeIdentifier.MakePascal(identifier);
     }
 
     /// <devdoc>
@@ -66,65 +44,7 @@ internal class CodeIdentifier
         return MakeValid(identifier);
     }
 
-    private static bool IsValidStart(char c)
-    {
-        // First char cannot be a number
-        if (CharUnicodeInfo.GetUnicodeCategory(c) == UnicodeCategory.DecimalDigitNumber)
-            return false;
-        return true;
-    }
-
-    private static bool IsValid(char c)
-    {
-        UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(c);
-        // each char must be Lu, Ll, Lt, Lm, Lo, Nd, Mn, Mc, Pc
-        //
-        switch (uc)
-        {
-            case UnicodeCategory.UppercaseLetter:        // Lu
-            case UnicodeCategory.LowercaseLetter:        // Ll
-            case UnicodeCategory.TitlecaseLetter:        // Lt
-            case UnicodeCategory.ModifierLetter:         // Lm
-            case UnicodeCategory.OtherLetter:            // Lo
-            case UnicodeCategory.DecimalDigitNumber:     // Nd
-            case UnicodeCategory.NonSpacingMark:         // Mn
-            case UnicodeCategory.SpacingCombiningMark:   // Mc
-            case UnicodeCategory.ConnectorPunctuation:   // Pc
-                break;
-            case UnicodeCategory.LetterNumber:
-            case UnicodeCategory.OtherNumber:
-            case UnicodeCategory.EnclosingMark:
-            case UnicodeCategory.SpaceSeparator:
-            case UnicodeCategory.LineSeparator:
-            case UnicodeCategory.ParagraphSeparator:
-            case UnicodeCategory.Control:
-            case UnicodeCategory.Format:
-            case UnicodeCategory.Surrogate:
-            case UnicodeCategory.PrivateUse:
-            case UnicodeCategory.DashPunctuation:
-            case UnicodeCategory.OpenPunctuation:
-            case UnicodeCategory.ClosePunctuation:
-            case UnicodeCategory.InitialQuotePunctuation:
-            case UnicodeCategory.FinalQuotePunctuation:
-            case UnicodeCategory.OtherPunctuation:
-            case UnicodeCategory.MathSymbol:
-            case UnicodeCategory.CurrencySymbol:
-            case UnicodeCategory.ModifierSymbol:
-            case UnicodeCategory.OtherSymbol:
-            case UnicodeCategory.OtherNotAssigned:
-                return false;
-            default:
-#if DEBUG
-                // use exception in the place of Debug.Assert to avoid throwing asserts from a server process such as aspnet_ewp.exe
-                throw new ArgumentException(SR.Format(SR.XmlInternalErrorDetails, "Unhandled category " + uc), nameof(c));
-#else
-                return false;
-#endif
-        }
-        return true;
-    }
-
-    internal static void CheckValidIdentifier([NotNull] string? ident)
+    internal static void CheckValidIdentifier(string? ident)
     {
         // TODO IMPLEMENT
 #if FALSE
@@ -240,8 +160,8 @@ internal class CodeIdentifier
     private static string? EscapeKeywords(string? identifier)
     {
         if (string.IsNullOrEmpty(identifier)) return identifier;
-        string originalIdentifier = identifier;
-        string[] names = identifier.Split(s_identifierSeparators);
+        string originalIdentifier = identifier!;
+        string[] names = identifier!.Split(s_identifierSeparators);
         StringBuilder sb = new StringBuilder();
         int separator = -1;
         for (int i = 0; i < names.Length; i++)

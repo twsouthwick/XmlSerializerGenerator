@@ -73,23 +73,6 @@ namespace System.Diagnostics.CodeAnalysis
         public string? Url { get; set; }
     }
 
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property, Inherited = false)]
-    internal sealed class AllowNullAttribute : Attribute
-    { }
-
-    [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue, AllowMultiple = true, Inherited = false)]
-    internal sealed class NotNullIfNotNullAttribute : Attribute
-    {
-        /// <summary>Initializes the attribute with the associated parameter name.</summary>
-        /// <param name="parameterName">
-        /// The associated parameter name.  The output will be non-null if the argument to the parameter specified is non-null.
-        /// </param>
-        public NotNullIfNotNullAttribute(string parameterName) => ParameterName = parameterName;
-
-        /// <summary>Gets the associated parameter name.</summary>
-        public string ParameterName { get; }
-    }
-
     [AttributeUsage(
         AttributeTargets.Field | AttributeTargets.ReturnValue | AttributeTargets.GenericParameter |
         AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Method |
@@ -113,47 +96,7 @@ namespace System.Diagnostics.CodeAnalysis
         /// </summary>
         public DynamicallyAccessedMemberTypes MemberTypes { get; }
     }
-    sealed class NotNullAttribute : Attribute
-    { }
-
-    internal sealed class DisallowNullAttribute : Attribute
-    { }
-
-    sealed class MemberNotNullWhenAttribute : Attribute
-    {
-        /// <summary>Initializes the attribute with the specified return value condition and a field or property member.</summary>
-        /// <param name="returnValue">
-        /// The return value condition. If the method returns this value, the associated parameter will not be null.
-        /// </param>
-        /// <param name="member">
-        /// The field or property member that is promised to be not-null.
-        /// </param>
-        public MemberNotNullWhenAttribute(bool returnValue, string member)
-        {
-            ReturnValue = returnValue;
-            Members = new[] { member };
-        }
-
-        /// <summary>Initializes the attribute with the specified return value condition and list of field and property members.</summary>
-        /// <param name="returnValue">
-        /// The return value condition. If the method returns this value, the associated parameter will not be null.
-        /// </param>
-        /// <param name="members">
-        /// The list of field and property members that are promised to be not-null.
-        /// </param>
-        public MemberNotNullWhenAttribute(bool returnValue, params string[] members)
-        {
-            ReturnValue = returnValue;
-            Members = members;
-        }
-
-        /// <summary>Gets the return value condition.</summary>
-        public bool ReturnValue { get; }
-
-        /// <summary>Gets field or property member names.</summary>
-        public string[] Members { get; }
-    }
-
+    
     [Flags]
     internal enum DynamicallyAccessedMemberTypes
     {
