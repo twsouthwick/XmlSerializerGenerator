@@ -24,9 +24,12 @@ internal static class SR
     public const string XmlInvalidArrayTypeSyntax = nameof(XmlInvalidArrayTypeSyntax);
     public const string XmlInvalidIdentifier = nameof(XmlInvalidIdentifier);
     public const string XmlInvalidXmlOverride = nameof(XmlInvalidXmlOverride);
+    public const string XmlMelformMapping = nameof(XmlMelformMapping);
     public const string XmlMissingSchema = nameof(XmlMissingSchema);
     public const string XmlNoAddMethod = nameof(XmlNoAddMethod);
     public const string XmlNoDefaultAccessors = nameof(XmlNoDefaultAccessors);
+    public const string XmlPregenOrphanType = nameof(XmlPregenOrphanType);
+    public const string XmlPregenTypeDynamic = nameof(XmlPregenTypeDynamic);
     public const string XmlReadOnlyPropertyError = nameof(XmlReadOnlyPropertyError);
     public const string XmlSerializableNameMissing1 = nameof(XmlSerializableNameMissing1);
     public const string XmlSerializableRootDupName = nameof(XmlSerializableRootDupName);

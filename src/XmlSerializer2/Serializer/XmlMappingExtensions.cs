@@ -12,6 +12,10 @@ internal static class XmlMappingExtensions
 {
     internal static readonly BindingFlags Flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
 
+    public static bool IsSoap(this XmlMembersMapping mapping) => false;
+
+    public static SpecifiedAccessor CheckSpecified(this MemberMapping mapping) => SpecifiedAccessor.None;
+
     public static ElementAccessor Accessor(this XmlMapping mapping)
     {
         var accessor = typeof(XmlMapping).GetMethod("Accessor", Flags);

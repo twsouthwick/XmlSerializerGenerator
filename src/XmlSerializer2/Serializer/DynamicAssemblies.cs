@@ -12,5 +12,6 @@ namespace XmlSerializer2
         public static bool IsTypeDynamic(Type[] type) => false;
 
         public static string GetName(Assembly assembly) => assembly.FullName;
+        internal static void Add(Assembly assembly) => throw new NotImplementedException();
     }
 }
