@@ -44,7 +44,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
     private string Create(Compilation compilation, ImmutableArray<XmlSerializerCreationInfo> infos, CancellationToken token)
     {
         var metadataContext = new MetadataLoadContext(compilation);
-        var r = new XmlReflectionImporter2();
+        var r = new XmlReflectionImporter2(metadataContext);
         var types = new List<Type>();
         var mappings = new List<XmlMapping>();
 

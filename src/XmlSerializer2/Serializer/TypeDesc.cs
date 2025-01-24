@@ -34,12 +34,12 @@ internal static class TrimmerConstants
 
 internal sealed class TypeScope
 {
-    private readonly Hashtable _typeDescs = new Hashtable();
+    private readonly Dictionary<Type, TypeDesc> _typeDescs = new();
     private readonly Hashtable _arrayTypeDescs = new Hashtable();
     private readonly ArrayList _typeMappings = new ArrayList();
 
-    private static readonly Hashtable s_primitiveTypes = new Hashtable();
-    private static readonly Hashtable s_primitiveDataTypes = new Hashtable();
+    private static readonly Dictionary<string, TypeDesc> s_primitiveTypes = new();
+    private static readonly Dictionary<XmlSchemaType, TypeDesc> s_primitiveDataTypes = new();
     private static readonly NameTable s_primitiveNames = new NameTable();
 
     private static readonly string[] s_unsupportedTypes = new string[] {
@@ -121,7 +121,7 @@ internal sealed class TypeScope
 
     internal static bool IsKnownType(Type type)
     {
-        if (type == typeof(object))
+        if (type.Equals(typeof(object)))
             return true;
         if (type.IsEnum)
             return false;
@@ -144,17 +144,17 @@ internal sealed class TypeScope
             case TypeCode.UInt64: return true;
             case TypeCode.Char: return true;
             default:
-                if (type == typeof(XmlQualifiedName))
+                if (type.Equals(typeof(XmlQualifiedName)))
                     return true;
-                else if (type == typeof(byte[]))
+                else if (type.Equals(typeof(byte[])))
                     return true;
-                else if (type == typeof(Guid))
+                else if (type.Equals(typeof(Guid)))
                     return true;
-                else if (type == typeof(TimeSpan))
+                else if (type.Equals(typeof(TimeSpan)))
                     return true;
-                else if (type == typeof(DateTimeOffset))
+                else if (type.Equals(typeof(DateTimeOffset)))
                     return true;
-                else if (type == typeof(XmlNode[]))
+                else if (type.Equals(typeof(XmlNode[])))
                     return true;
                 break;
         }
@@ -206,8 +206,8 @@ internal sealed class TypeScope
         XmlSchemaSimpleType dataType = new XmlSchemaSimpleType();
         dataType.Name = dataTypeName;
         TypeDesc typeDesc = new TypeDesc(type, true, dataType, formatterName, flags);
-        if (s_primitiveTypes[type] == null)
-            s_primitiveTypes.Add(type, typeDesc);
+        if (!s_primitiveTypes.ContainsKey(type.FullName))
+            s_primitiveTypes.Add(type.FullName, typeDesc);
         s_primitiveDataTypes.Add(dataType, typeDesc);
         s_primitiveNames.Add(dataTypeName, XmlSchema.Namespace, typeDesc);
     }
@@ -224,8 +224,8 @@ internal sealed class TypeScope
         }
         dataType.Content = restriction;
         TypeDesc typeDesc = new TypeDesc(type, false, dataType, formatterName, flags);
-        if (s_primitiveTypes[type] == null)
-            s_primitiveTypes.Add(type, typeDesc);
+        if (!s_primitiveTypes.ContainsKey(type.FullName))
+            s_primitiveTypes.Add(type.FullName, typeDesc);
         s_primitiveDataTypes.Add(dataType, typeDesc);
         s_primitiveNames.Add(dataTypeName, ns, typeDesc);
     }
@@ -278,15 +278,26 @@ internal sealed class TypeScope
             throw new InvalidOperationException(SR.Format(SR.XmlUnsupportedOpenGenericType, type));
         }
 
-        TypeDesc typeDesc =
-            (TypeDesc?)s_primitiveTypes[type] ??
-            (TypeDesc?)_typeDescs[type] ??
-            ImportTypeDesc(type, source, directReference);
+        TypeDesc typeDesc = Get2(type) ?? ImportTypeDesc(type, source, directReference);
 
         if (throwOnError)
             typeDesc.CheckSupported();
 
         return typeDesc;
+    }
+
+    private TypeDesc? Get2(Type type)
+    {
+        if (s_primitiveTypes.TryGetValue(type.FullName, out var primitive))
+        {
+            return primitive;
+        }
+        if (_typeDescs.TryGetValue(type, out var known))
+        {
+            return known;
+        }
+
+        return null;
     }
 
     [RequiresUnreferencedCode("calls ImportTypeDesc")]
@@ -318,10 +329,10 @@ internal sealed class TypeScope
     {
         if (typeDesc.Type != null)
             return typeDesc.Type;
-        foreach (DictionaryEntry de in _typeDescs)
+        foreach (var de in _typeDescs)
         {
             if (de.Value == typeDesc)
-                return de.Key as Type;
+                return de.Key;
         }
         return null;
     }
@@ -994,7 +1005,6 @@ internal sealed class TypeScope
     {
         get { return _typeMappings; }
     }
-    internal static Hashtable PrimtiveTypes { get { return s_primitiveTypes; } }
 }
 
 internal enum TypeKind

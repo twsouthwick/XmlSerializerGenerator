@@ -27,6 +27,7 @@ namespace XmlSerializer2.Test
 
                 public class SomeClass
                 {
+                    public int Value { get; set; }
                 }
                 """;
 

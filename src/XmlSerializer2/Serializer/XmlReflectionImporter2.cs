@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Roslyn.Reflection;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -39,6 +40,7 @@ namespace System.Xml.Serialization
         private StructMapping? _root;
         private readonly string _defaultNs;
         private readonly ModelScope _modelScope;
+        private readonly MetadataLoadContext _context;
         private int _arrayNestingLevel;
         private XmlArrayItemAttributes? _savedArrayItemAttributes;
         private string? _savedArrayNamespace;
@@ -54,34 +56,36 @@ namespace System.Xml.Serialization
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>
-        public XmlReflectionImporter2() : this(null, null)
+        public XmlReflectionImporter2(MetadataLoadContext context)
         {
-        }
-
-        /// <devdoc>
-        ///    <para>[To be supplied.]</para>
-        /// </devdoc>
-        public XmlReflectionImporter2(string? defaultNamespace) : this(null, defaultNamespace)
-        {
-        }
-
-        /// <devdoc>
-        ///    <para>[To be supplied.]</para>
-        /// </devdoc>
-        public XmlReflectionImporter2(XmlAttributeOverrides? attributeOverrides) : this(attributeOverrides, null)
-        {
-        }
-
-        /// <devdoc>
-        ///    <para>[To be supplied.]</para>
-        /// </devdoc>
-        public XmlReflectionImporter2(XmlAttributeOverrides? attributeOverrides, string? defaultNamespace)
-        {
-            _defaultNs = defaultNamespace ?? string.Empty;
-            _attributeOverrides = attributeOverrides ?? new XmlAttributeOverrides();
+            _context = context;
+            _defaultNs = string.Empty;
+            _attributeOverrides = new XmlAttributeOverrides();
             _typeScope = new TypeScope();
             _modelScope = new ModelScope(_typeScope);
         }
+
+        ///// <devdoc>
+        /////    <para>[To be supplied.]</para>
+        ///// </devdoc>
+        //public XmlReflectionImporter2(string? defaultNamespace) : this(null, defaultNamespace)
+        //{
+        //}
+
+        ///// <devdoc>
+        /////    <para>[To be supplied.]</para>
+        ///// </devdoc>
+        //public XmlReflectionImporter2(XmlAttributeOverrides? attributeOverrides) : this(attributeOverrides, null)
+        //{
+        //}
+
+        ///// <devdoc>
+        /////    <para>[To be supplied.]</para>
+        ///// </devdoc>
+        //public XmlReflectionImporter2(XmlAttributeOverrides? attributeOverrides, string? defaultNamespace)
+        //{
+
+        //}
 
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
@@ -174,6 +178,11 @@ namespace System.Xml.Serialization
 
         public XmlTypeMapping ImportTypeMapping(Type type, XmlRootAttribute? root, string? defaultNamespace)
         {
+            if (type is not RoslynType)
+            {
+                throw new NotSupportedException();
+            }
+
             XmlTypeMapping xmlMapping = new XmlTypeMapping(_typeScope, ImportElement(_modelScope.GetTypeModel(type), root, defaultNamespace, new RecursionLimiter()));
             xmlMapping.SetKeyInternal(XmlMapping.GenerateKey(type, root, defaultNamespace));
             xmlMapping.GenerateSerializer = true;
@@ -185,31 +194,20 @@ namespace System.Xml.Serialization
         /// </devdoc>
 
 
-        public XmlMembersMapping ImportMembersMapping(string? elementName, string? ns, XmlReflectionMember[] members, bool hasWrapperElement)
-        {
-            return ImportMembersMapping(elementName, ns, members, hasWrapperElement, false);
-        }
+        //public XmlMembersMapping ImportMembersMapping(string? elementName, string? ns, XmlReflectionMember[] members, bool hasWrapperElement)
+        //{
+        //    return ImportMembersMapping(elementName, ns, members, hasWrapperElement, false);
+        //}
 
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>
 
 
-        public XmlMembersMapping ImportMembersMapping(string? elementName, string? ns, XmlReflectionMember[] members, bool hasWrapperElement, bool rpc)
-        {
-            return ImportMembersMapping(elementName, ns, members, hasWrapperElement, rpc, false);
-        }
-
-        /// <devdoc>
-        ///    <para>[To be supplied.]</para>
-        /// </devdoc>
-        ///
-
-
-        public XmlMembersMapping ImportMembersMapping(string? elementName, string? ns, XmlReflectionMember[] members, bool hasWrapperElement, bool rpc, bool openModel)
-        {
-            return ImportMembersMapping(elementName, ns, members, hasWrapperElement, rpc, openModel, XmlMappingAccess.Read | XmlMappingAccess.Write);
-        }
+        //public XmlMembersMapping ImportMembersMapping(string? elementName, string? ns, XmlReflectionMember[] members, bool hasWrapperElement, bool rpc)
+        //{
+        //    return ImportMembersMapping(elementName, ns, members, hasWrapperElement, rpc, false);
+        //}
 
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
@@ -217,34 +215,45 @@ namespace System.Xml.Serialization
         ///
 
 
-        public XmlMembersMapping ImportMembersMapping(string? elementName, string? ns, XmlReflectionMember[] members, bool hasWrapperElement, bool rpc, bool openModel, XmlMappingAccess access)
-        {
-            ElementAccessor element = new ElementAccessor();
-            element.Name = string.IsNullOrEmpty(elementName) ? elementName : XmlConvert.EncodeLocalName(elementName);
-            element.Namespace = ns;
+        //public XmlMembersMapping ImportMembersMapping(string? elementName, string? ns, XmlReflectionMember[] members, bool hasWrapperElement, bool rpc, bool openModel)
+        //{
+        //    return ImportMembersMapping(elementName, ns, members, hasWrapperElement, rpc, openModel, XmlMappingAccess.Read | XmlMappingAccess.Write);
+        //}
 
-            MembersMapping membersMapping = ImportMembersMapping(members, ns, hasWrapperElement, rpc, openModel, new RecursionLimiter());
-            element.Mapping = membersMapping;
-            element.Form = XmlSchemaForm.Qualified;   // elements within soap:body are always qualified
-            if (!rpc)
-            {
-                if (hasWrapperElement)
-                    element = (ElementAccessor)ReconcileAccessor(element, _elements);
-                else
-                {
-                    foreach (MemberMapping mapping in membersMapping.Members!)
-                    {
-                        if (mapping.Elements != null && mapping.Elements.Length > 0)
-                        {
-                            mapping.Elements[0] = (ElementAccessor)ReconcileAccessor(mapping.Elements[0], _elements);
-                        }
-                    }
-                }
-            }
-            XmlMembersMapping xmlMapping = new XmlMembersMapping(_typeScope, element, access);
-            xmlMapping.GenerateSerializer = true;
-            return xmlMapping;
-        }
+        /// <devdoc>
+        ///    <para>[To be supplied.]</para>
+        /// </devdoc>
+        ///
+
+
+        //public XmlMembersMapping ImportMembersMapping(string? elementName, string? ns, XmlReflectionMember[] members, bool hasWrapperElement, bool rpc, bool openModel, XmlMappingAccess access)
+        //{
+        //    ElementAccessor element = new ElementAccessor();
+        //    element.Name = string.IsNullOrEmpty(elementName) ? elementName : XmlConvert.EncodeLocalName(elementName);
+        //    element.Namespace = ns;
+
+        //    MembersMapping membersMapping = ImportMembersMapping(members, ns, hasWrapperElement, rpc, openModel, new RecursionLimiter());
+        //    element.Mapping = membersMapping;
+        //    element.Form = XmlSchemaForm.Qualified;   // elements within soap:body are always qualified
+        //    if (!rpc)
+        //    {
+        //        if (hasWrapperElement)
+        //            element = (ElementAccessor)ReconcileAccessor(element, _elements);
+        //        else
+        //        {
+        //            foreach (MemberMapping mapping in membersMapping.Members!)
+        //            {
+        //                if (mapping.Elements != null && mapping.Elements.Length > 0)
+        //                {
+        //                    mapping.Elements[0] = (ElementAccessor)ReconcileAccessor(mapping.Elements[0], _elements);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    XmlMembersMapping xmlMapping = new XmlMembersMapping(_typeScope, element, access);
+        //    xmlMapping.GenerateSerializer = true;
+        //    return xmlMapping;
+        //}
 
         private XmlAttributes GetAttributes(Type type, bool canBeSimpleType)
         {

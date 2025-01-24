@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{F4CF0822
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "custom-metadata-generator", "tools\custom-metadata-generator\custom-metadata-generator.csproj", "{5D482300-3829-2BF4-9259-42C2A73A0658}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test-generator", "tools\test-generator\test-generator.csproj", "{450590E8-241C-4834-9876-143239D41702}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{5D482300-3829-2BF4-9259-42C2A73A0658}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D482300-3829-2BF4-9259-42C2A73A0658}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D482300-3829-2BF4-9259-42C2A73A0658}.Release|Any CPU.Build.0 = Release|Any CPU
+		{450590E8-241C-4834-9876-143239D41702}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{450590E8-241C-4834-9876-143239D41702}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{450590E8-241C-4834-9876-143239D41702}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{450590E8-241C-4834-9876-143239D41702}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +68,7 @@ Global
 		{9FADF29B-192C-DBE8-6012-1F8C9AAD0E92} = {E61EFE33-46C8-4F28-9307-60684526D513}
 		{38D91BB8-4470-439D-0D09-2BD552A4284F} = {F4CF0822-CB25-4A43-8784-61FEA7234444}
 		{5D482300-3829-2BF4-9259-42C2A73A0658} = {F4CF0822-CB25-4A43-8784-61FEA7234444}
+		{450590E8-241C-4834-9876-143239D41702} = {F4CF0822-CB25-4A43-8784-61FEA7234444}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4DB85DBB-AC7C-46F6-A02D-76338D1DF827}
