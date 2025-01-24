@@ -6,6 +6,18 @@ using Microsoft.CodeAnalysis;
 #nullable disable
 namespace Roslyn.Reflection
 {
+    internal class RoslynModule : Module
+    {
+        private readonly Assembly  _assembly;
+
+        public RoslynModule(RoslynAssembly assembly)
+        {
+            _assembly = assembly;
+        }
+
+        public override Assembly Assembly => _assembly;
+    }
+
     internal class RoslynAssembly : Assembly
     {
         private readonly MetadataLoadContext _metadataLoadContext;

@@ -14,9 +14,9 @@ class XmlSerializerImpl
 {
     private const string GeneratedAssemblyNamespace = "XmlSerializersGenerated";
 
-    internal static bool GenerateSerializer(Type[]? types, XmlMapping[] mappings, IndentedWriter writer)
+    internal static bool GenerateSerializer(List<Type> types, List<XmlMapping> mappings, IndentedWriter writer)
     {
-        if (types == null || types.Length == 0)
+        if (types.Count == 0)
             return false;
 
         //if (XmlMapping.IsShallow(mappings))
@@ -25,9 +25,8 @@ class XmlSerializerImpl
         //}
 
         Assembly? assembly = null;
-        for (int i = 0; i < types.Length; i++)
+        foreach (Type type in types)
         {
-            Type type = types[i];
             if (DynamicAssemblies.IsTypeDynamic(type))
             {
                 throw new InvalidOperationException(SR.Format(SR.XmlPregenTypeDynamic, type.FullName));
@@ -49,7 +48,7 @@ class XmlSerializerImpl
         return GenerateSerializerToStream(mappings, types, null, assembly, new Hashtable(), writer);
     }
 
-    internal static bool GenerateSerializerToStream(XmlMapping[] xmlMappings, Type?[] types, string? defaultNamespace, Assembly? assembly, Hashtable assemblies, IndentedWriter writer)
+    internal static bool GenerateSerializerToStream(List<XmlMapping> xmlMappings, List<Type> types, string? defaultNamespace, Assembly? assembly, Hashtable assemblies, IndentedWriter writer)
     {
         var compiler = new Compiler();
         var scopeTable = new Hashtable();
@@ -77,18 +76,18 @@ class XmlSerializerImpl
             }
         }
 
-        for (int i = 0; i < types.Length; i++)
+        foreach (var t in types)
         {
-            Compiler.AddImport(types[i], importedTypes);
+            Compiler.AddImport(t, importedTypes);
         }
 
         writer.WriteLine("[assembly:System.Security.AllowPartiallyTrustedCallers()]");
         writer.WriteLine("[assembly:System.Security.SecurityTransparent()]");
         writer.WriteLine("[assembly:System.Security.SecurityRules(System.Security.SecurityRuleSet.Level1)]");
 
-        if (assembly != null && types.Length > 0)
+        if (assembly != null && types.Count > 0)
         {
-            for (int i = 0; i < types.Length; i++)
+            for (int i = 0; i < types.Count; i++)
             {
                 Type? type = types[i];
                 if (type == null)
@@ -126,7 +125,7 @@ class XmlSerializerImpl
         classes.AddUnique("XmlSerializationReader", "XmlSerializationReader");
         string? suffix = null;
 
-        if (types != null && types.Length == 1 && types[0] != null)
+        if (types != null && types.Count == 1 && types[0] != null)
         {
             suffix = CodeIdentifier.MakeValid(types[0]!.Name);
             if (types[0]!.IsArray)
@@ -143,9 +142,9 @@ class XmlSerializerImpl
         writerClass = classes.AddUnique(writerClass, writerClass);
         var writerCodeGen = new XmlSerializationWriterCodeGen(writer, scopes, "public", writerClass);
         writerCodeGen.GenerateBegin();
-        string?[] writeMethodNames = new string[xmlMappings.Length];
+        string?[] writeMethodNames = new string[xmlMappings.Count];
 
-        for (int i = 0; i < xmlMappings.Length; i++)
+        for (int i = 0; i < xmlMappings.Count; i++)
         {
             writeMethodNames[i] = writerCodeGen.GenerateElement(xmlMappings[i]);
         }

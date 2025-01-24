@@ -48,12 +48,17 @@ namespace Roslyn.Reflection
 
         public override object[] GetCustomAttributes(bool inherit)
         {
-            throw new NotSupportedException();
+            return _metadataLoadContext.Provider.GetProvider(this).GetCustomAttributes(inherit);
         }
 
         public override object[] GetCustomAttributes(Type attributeType, bool inherit)
         {
-            throw new NotSupportedException();
+            return _metadataLoadContext.Provider.GetProvider(this).GetCustomAttributes(attributeType, inherit);
+        }
+
+        public override bool IsDefined(Type attributeType, bool inherit)
+        {
+            return _metadataLoadContext.Provider.GetProvider(this).IsDefined(attributeType, inherit);
         }
 
         public override MethodImplAttributes GetMethodImplementationFlags()
@@ -80,11 +85,6 @@ namespace Roslyn.Reflection
         public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
         {
             throw new NotSupportedException();
-        }
-
-        public override bool IsDefined(Type attributeType, bool inherit)
-        {
-            throw new NotImplementedException();
         }
     }
 }

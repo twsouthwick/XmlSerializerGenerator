@@ -3,10 +3,16 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.CodeAnalysis.Text;
+using Roslyn.Reflection;
+using System;
 using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
@@ -24,10 +30,37 @@ public class XmlSerializerGenerator : IIncrementalGenerator
             .CreateSyntaxProvider(
                 predicate: static (s, _) => IsSyntaxTargetForGeneration(s),
                 transform: static (ctx, token) => GetSemanticTargetForGeneration(ctx, token))
-            .Where(static m => m is not null);
-
+            .Where(static m => m is not null)
+            .Collect();
+        var sourceGenerator = context.CompilationProvider
+            .Combine(xmlSerializerCreations)
+            .Select((ctx, token) => Create(ctx.Left, ctx.Right!, token));
         // Register the source output
-        context.RegisterSourceOutput(xmlSerializerCreations, static (ctx, creation) => Execute(ctx, creation!));
+        context.RegisterSourceOutput(
+            sourceGenerator,
+            static (context, content) => context.AddSource("XmlSerializer.g.cs", SourceText.From(content, Encoding.UTF8)));
+    }
+
+    private string Create(Compilation compilation, ImmutableArray<XmlSerializerCreationInfo> infos, CancellationToken token)
+    {
+        var metadataContext = new MetadataLoadContext(compilation);
+        var r = new XmlReflectionImporter();
+        var types = new List<Type>();
+        var mappings = new List<XmlMapping>();
+
+        foreach (var info in infos)
+        {
+            var type = metadataContext.ResolveType(info.FullyQualifiedName);
+            mappings.Add(r.ImportTypeMapping(type));
+            types.Add(type);
+        }
+
+
+        using var sw = new StringWriter();
+        var writer = new IndentedTextWriter(sw);
+        XmlSerializerImpl.GenerateSerializer(types, mappings, writer);
+
+        return sw.ToString();
     }
 
     private static bool IsSyntaxTargetForGeneration(SyntaxNode node)
@@ -54,91 +87,12 @@ public class XmlSerializerGenerator : IIncrementalGenerator
         return null;
     }
 
-    private static void Execute(SourceProductionContext context, XmlSerializerCreationInfo creationInfo)
-    {
-        const string GeneratedAssemblyNamespace = "XmlSerializersGenerated";
-
-        using var sw = new StringWriter();
-        var writer = new IndentedTextWriter(sw);
-
-        writer.WriteLine("[assembly:System.Security.AllowPartiallyTrustedCallers()]");
-        writer.WriteLine("[assembly:System.Security.SecurityTransparent()]");
-        writer.WriteLine("[assembly:System.Security.SecurityRules(System.Security.SecurityRuleSet.Level1)]");
-
-
-        var classes = new CodeIdentifiers();
-        classes.AddUnique("XmlSerializationWriter", "XmlSerializationWriter");
-        classes.AddUnique("XmlSerializationReader", "XmlSerializationReader");
-        string? suffix = null;
-
-        if (creationInfo.Types is [{ } first])
-        {
-            suffix = CodeIdentifier.MakeValid(first.Name);
-
-            if (first.IsArray)
-            {
-                suffix += "Array";
-            }
-        }
-
-
-        writer.WriteLine($"namespace {GeneratedAssemblyNamespace} {{");
-        writer.Indent++;
-        writer.WriteLine();
-
-        string writerClass = $"XmlSerializationWriter{suffix}";
-        writerClass = classes.AddUnique(writerClass, writerClass);
-        //var writerCodeGen = new XmlSerializationWriterCodeGen(writer, scopes, "public", writerClass);
-        //writerCodeGen.GenerateBegin();
-        //string?[] writeMethodNames = new string[xmlMappings.Length];
-
-        //for (int i = 0; i < xmlMappings.Length; i++)
-        //{
-        //    writeMethodNames[i] = writerCodeGen.GenerateElement(xmlMappings[i]);
-        //}
-        //writerCodeGen.GenerateEnd();
-        //writer.WriteLine();
-
-
-       
-        //context.AddSource($"XmlSerializer.{className}.g.cs", SourceText.From(sourceBuilder.ToString(), Encoding.UTF8));
-
-        //string readerClass = $"XmlSerializationReader{suffix}";
-        //readerClass = classes.AddUnique(readerClass, readerClass);
-        //var readerCodeGen = new XmlSerializationReaderCodeGen(writer, scopes, "public", readerClass);
-        //readerCodeGen.GenerateBegin();
-        //string?[] readMethodNames = new string[xmlMappings.Length];
-        //for (int i = 0; i < xmlMappings.Length; i++)
-        //{
-        //    readMethodNames[i] = readerCodeGen.GenerateElement(xmlMappings[i])!;
-        //}
-
-        //readerCodeGen.GenerateEnd();
-
-        //string baseSerializer = readerCodeGen.GenerateBaseSerializer("XmlSerializer1", readerClass, writerClass, classes);
-        //var serializers = new Hashtable();
-        //for (int i = 0; i < xmlMappings.Length; i++)
-        //{
-        //    if (serializers[xmlMappings[i].Key!] == null)
-        //    {
-        //        serializers[xmlMappings[i].Key!] = readerCodeGen.GenerateTypedSerializer(readMethodNames[i], writeMethodNames[i], xmlMappings[i], classes, baseSerializer, readerClass, writerClass);
-        //    }
-        //}
-
-        //readerCodeGen.GenerateSerializerContract(xmlMappings, types!, readerClass, readMethodNames, writerClass, writeMethodNames, serializers);
-        //writer.Indent--;
-        //writer.WriteLine("}");
-
-        //string codecontent = compiler.Source.ToString()!;
-        //byte[] info = new UTF8Encoding(true).GetBytes(codecontent);
-        //stream.Write(info, 0, info.Length);
-        //stream.Flush();
-        //return true;
-    }
+    private record CompilationCreationInfo(ImmutableArray<XmlSerializerCreationInfo> Creators);
 
     private class XmlSerializerCreationInfo
     {
         public Location Location { get; }
+
         public string FullyQualifiedName { get; }
 
         public List<XmlSerializerTypeInfo> Types { get; } = [];

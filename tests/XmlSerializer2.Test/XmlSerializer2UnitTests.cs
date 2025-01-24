@@ -48,7 +48,7 @@ namespace XmlSerializer2.Test
                     Sources = { test },
                     GeneratedSources =
                     {
-                        ( typeof(XmlSerializerGenerator), "XmlSerializer.SomeClass.g.cs", SourceText.From(generated, Encoding.UTF8))
+                        ( typeof(XmlSerializerGenerator), "XmlSerializer.g.cs", SourceText.From(generated, Encoding.UTF8))
                     }
                 },
             });

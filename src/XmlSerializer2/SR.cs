@@ -6,6 +6,7 @@ internal static class SR
     
     public static string Format(string name, params object?[] args) => string.Format(System.Globalization.CultureInfo.InvariantCulture, name, args);
     
+    public const string Arg_ReflectionOnlyCA = nameof(Arg_ReflectionOnlyCA);
     public const string Xml_InvalidNameChars = nameof(Xml_InvalidNameChars);
     public const string XmlChoiceMissingAnyValue = nameof(XmlChoiceMissingAnyValue);
     public const string XmlChoiceMissingValue = nameof(XmlChoiceMissingValue);

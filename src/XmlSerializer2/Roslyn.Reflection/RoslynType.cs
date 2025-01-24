@@ -32,7 +32,7 @@ namespace Roslyn.Reflection
 
         public override Guid GUID => Guid.Empty;
 
-        public override Module Module => throw new NotImplementedException();
+        public override Module Module => new RoslynModule((RoslynAssembly)Assembly);
 
         public override string Namespace => _typeSymbol.ContainingNamespace?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.Omitted)) is { Length: > 0 } ns ? ns : null;
 
@@ -113,12 +113,17 @@ namespace Roslyn.Reflection
 
         public override object[] GetCustomAttributes(bool inherit)
         {
-            throw new NotSupportedException();
+            return _metadataLoadContext.Provider.GetProvider(this).GetCustomAttributes(inherit);
         }
 
         public override object[] GetCustomAttributes(Type attributeType, bool inherit)
         {
-            throw new NotSupportedException();
+            return _metadataLoadContext.Provider.GetProvider(this).GetCustomAttributes(attributeType, inherit);
+        }
+
+        public override bool IsDefined(Type attributeType, bool inherit)
+        {
+            return _metadataLoadContext.Provider.GetProvider(this).IsDefined(attributeType, inherit);
         }
 
         public override Type MakeArrayType()
@@ -353,11 +358,6 @@ namespace Roslyn.Reflection
         }
 
         public override object InvokeMember(string name, BindingFlags invokeAttr, Binder binder, object target, object[] args, ParameterModifier[] modifiers, CultureInfo culture, string[] namedParameters)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override bool IsDefined(Type attributeType, bool inherit)
         {
             throw new NotSupportedException();
         }
