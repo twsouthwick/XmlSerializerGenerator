@@ -897,7 +897,7 @@ internal sealed class MemberMapping : AccessorMapping
 {
     private string? _name;
     private bool _checkShouldPersist;
-    //private SpecifiedAccessor _checkSpecified;
+    private SpecifiedAccessor _checkSpecified;
     private bool _isReturnValue;
     private bool _readOnly;
     private int _sequenceId = -1;
@@ -912,7 +912,7 @@ internal sealed class MemberMapping : AccessorMapping
     {
         _name = mapping._name;
         _checkShouldPersist = mapping._checkShouldPersist;
-        //_checkSpecified = mapping._checkSpecified;
+        _checkSpecified = mapping._checkSpecified;
         _isReturnValue = mapping._isReturnValue;
         _readOnly = mapping._readOnly;
         _sequenceId = mapping._sequenceId;
@@ -927,11 +927,11 @@ internal sealed class MemberMapping : AccessorMapping
         set { _checkShouldPersist = value; }
     }
 
-    //internal SpecifiedAccessor CheckSpecified
-    //{
-    //    get { return _checkSpecified; }
-    //    set { _checkSpecified = value; }
-    //}
+    internal SpecifiedAccessor CheckSpecified
+    {
+        get { return _checkSpecified; }
+        set { _checkSpecified = value; }
+    }
 
     internal string Name
     {

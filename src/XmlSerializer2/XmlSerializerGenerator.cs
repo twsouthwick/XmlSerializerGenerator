@@ -44,7 +44,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
     private string Create(Compilation compilation, ImmutableArray<XmlSerializerCreationInfo> infos, CancellationToken token)
     {
         var metadataContext = new MetadataLoadContext(compilation);
-        var r = new XmlReflectionImporter();
+        var r = new XmlReflectionImporter2();
         var types = new List<Type>();
         var mappings = new List<XmlMapping>();
 
@@ -60,7 +60,8 @@ public class XmlSerializerGenerator : IIncrementalGenerator
         var writer = new IndentedTextWriter(sw);
         XmlSerializerImpl.GenerateSerializer(types, mappings, writer);
 
-        return sw.ToString();
+        var s = sw.ToString();
+        return s;
     }
 
     private static bool IsSyntaxTargetForGeneration(SyntaxNode node)

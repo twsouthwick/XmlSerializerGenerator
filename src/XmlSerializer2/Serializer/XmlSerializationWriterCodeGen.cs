@@ -374,7 +374,7 @@ internal sealed class XmlSerializationWriterCodeGen : XmlSerializationCodeGen
     [RequiresUnreferencedCode("calls WriteMember")]
     private string GenerateMembersElement(XmlMembersMapping xmlMembersMapping)
     {
-        ElementAccessor element = xmlMembersMapping.Accessor();
+        ElementAccessor element = xmlMembersMapping.Accessor;
         MembersMapping mapping = (MembersMapping)element.Mapping!;
         bool hasWrapperElement = mapping.HasWrapperElement;
         bool writeAccessors = mapping.WriteAccessors;
@@ -584,7 +584,7 @@ internal sealed class XmlSerializationWriterCodeGen : XmlSerializationCodeGen
     [RequiresUnreferencedCode("calls WriteMember")]
     private string GenerateTypeElement(XmlTypeMapping xmlTypeMapping)
     {
-        ElementAccessor element = xmlTypeMapping.Accessor();
+        ElementAccessor element = xmlTypeMapping.Accessor;
         TypeMapping mapping = element.Mapping!;
         string methodName = NextMethodName(element.Name);
         Writer.WriteLine();

@@ -52,8 +52,9 @@ class XmlSerializerImpl
     {
         var compiler = new Compiler();
         var scopeTable = new Hashtable();
-        //foreach (XmlMapping mapping in xmlMappings)
-            //scopeTable[mapping.Scope!] = mapping;
+
+        foreach (XmlMapping mapping in xmlMappings)
+            scopeTable[mapping.Scope!] = mapping;
 
         var scopes = new TypeScope[scopeTable.Keys.Count];
         scopeTable.Keys.CopyTo(scopes, 0);

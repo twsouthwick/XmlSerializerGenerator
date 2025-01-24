@@ -11,88 +11,11 @@ using XmlSerializer2;
 
 namespace System.Xml.Serialization;
 
-internal class XmlMembersMapping2 : XmlMapping2
-{
-}
 internal enum SpecifiedAccessor
 {
     None,
     ReadOnly,
     ReadWrite,
-}
-internal class XmlTypeMapping2 : XmlMapping2
-{
-    //
-    // Summary:
-    //     The fully qualified type name that includes the namespace (or namespaces) and
-    //     type.
-    //
-    // Returns:
-    //     The fully qualified type name.
-    public string TypeFullName { get; set; } = null!;
-    //
-    // Summary:
-    //     Gets the type name of the mapped object.
-    //
-    // Returns:
-    //     The type name of the mapped object.
-    public string TypeName { get; set; } = null!;
-    //
-    // Summary:
-    //     Gets the XML element name of the mapped object.
-    //
-    // Returns:
-    //     The XML element name of the mapped object. The default is the class name of the
-    //     object.
-    public string XsdTypeName { get; set; } = null!;
-    //
-    // Summary:
-    //     Gets the XML namespace of the mapped object.
-    //
-    // Returns:
-    //     The XML namespace of the mapped object. The default is an empty string ("").
-    public string XsdTypeNamespace { get; set; } = null!;
-}
-
-internal class XmlMapping2
-{
-    //
-    // Summary:
-    //     Get the name of the mapped element.
-    //
-    // Returns:
-    //     The name of the mapped element.
-    public string ElementName { get; } = null!;
-    //
-    // Summary:
-    //     Gets the namespace of the mapped element.
-    //
-    // Returns:
-    //     The namespace of the mapped element.
-    public string Namespace { get; } = null!;
-    //
-    // Summary:
-    //     Gets the name of the XSD element of the mapping.
-    //
-    // Returns:
-    //     The XSD element name.
-    public string XsdElementName { get; } = null!;
-
-    //
-    // Summary:
-    //     Sets the key used to look up the mapping.
-    //
-    // Parameters:
-    //   key:
-    //     A System.String that contains the lookup key.
-    public void SetKey(string key)
-    {
-        Key = key;
-    }
-
-    public string? Key { get; set; }
-
-    public required Accessor Accessor { get; set; }
 }
 
 internal static class TrimmerConstants

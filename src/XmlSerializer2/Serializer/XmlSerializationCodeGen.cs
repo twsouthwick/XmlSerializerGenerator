@@ -151,7 +151,7 @@ internal class XmlSerializationCodeGen
                 if (methods[i] == null)
                     continue;
                 _writer.Write("_tmp[");
-                WriteQuotedCSharpString(xmlMappings[i].GetKey());
+                WriteQuotedCSharpString(xmlMappings[i].Key);
                 _writer.Write("] = ");
                 WriteQuotedCSharpString(methods[i]);
                 _writer.WriteLine(";");
@@ -234,7 +234,7 @@ internal class XmlSerializationCodeGen
 
     internal string GenerateTypedSerializer(string? readMethod, string? writeMethod, XmlMapping mapping, CodeIdentifiers classes, string baseSerializer, string readerClass, string writerClass)
     {
-        string serializerName = CodeIdentifier.MakeValid(Accessor.UnescapeName(mapping.Accessor().Mapping!.TypeDesc!.Name));
+        string serializerName = CodeIdentifier.MakeValid(Accessor.UnescapeName(mapping.Accessor.Mapping!.TypeDesc!.Name));
         serializerName = classes.AddUnique($"{serializerName}Serializer", mapping);
 
         _writer.WriteLine();
@@ -253,16 +253,16 @@ internal class XmlSerializationCodeGen
         _writer.WriteLine(" xmlReader) {");
         _writer.Indent++;
 
-        if (mapping.Accessor().Any)
+        if (mapping.Accessor.Any)
         {
             _writer.WriteLine("return true;");
         }
         else
         {
             _writer.Write("return xmlReader.IsStartElement(");
-            WriteQuotedCSharpString(mapping.Accessor().Name);
+            WriteQuotedCSharpString(mapping.Accessor.Name);
             _writer.Write(", ");
-            WriteQuotedCSharpString(mapping.Accessor().Namespace);
+            WriteQuotedCSharpString(mapping.Accessor.Namespace);
             _writer.WriteLine(");");
         }
         _writer.Indent--;
@@ -339,7 +339,7 @@ internal class XmlSerializationCodeGen
         {
             if (xmlMappings[i] is XmlTypeMapping)
             {
-                Type? type = xmlMappings[i].Accessor().Mapping!.TypeDesc!.Type;
+                Type? type = xmlMappings[i].Accessor.Mapping!.TypeDesc!.Type;
                 if (type == null)
                     continue;
                 if (!type.IsPublic && !type.IsNestedPublic)
@@ -351,7 +351,7 @@ internal class XmlSerializationCodeGen
                 _writer.Write("if (type == typeof(");
                 _writer.Write(CodeIdentifier2.GetCSharpName(type));
                 _writer.Write(")) return new ");
-                _writer.Write((string?)serializers[xmlMappings[i].GetKey()!]);
+                _writer.Write((string?)serializers[xmlMappings[i].Key!]);
                 _writer.WriteLine("();");
             }
         }

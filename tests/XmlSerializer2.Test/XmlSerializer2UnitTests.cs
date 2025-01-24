@@ -31,14 +31,47 @@ namespace XmlSerializer2.Test
                 """;
 
             var generated = """
-                using System.Xml.Serialization;
-
-                namespace XmlSerializers.Generated
-                {
-                    internal class SomeClassXmlSerializer : XmlSerializer
-                    {
+                [assembly:System.Security.AllowPartiallyTrustedCallers()]
+                [assembly:System.Security.SecurityTransparent()]
+                [assembly:System.Security.SecurityRules(System.Security.SecurityRuleSet.Level1)]
+                namespace XmlSerializersGenerated {
+                    
+                    public class XmlSerializationWriterSomeClass : System.Xml.Serialization.XmlSerializationWriter {
+                        
+                        public void Write4_SomeClass(object o) {
+                            WriteStartDocument();
+                            if (o == null) {
+                                WriteNullTagLiteral(@"SomeClass", @"");
+                                return;
+                            }
+                            TopLevelElement();
+                            Write3_SomeClass(@"SomeClass", @"", ((global::SomeClass)o), true, false);
+                        }
+                        
+                        void Write3_SomeClass(string n, string ns, global::SomeClass o, bool isNullable, bool needType) {
+                            if ((object)o == null) {
+                                if (isNullable) WriteNullTagLiteral(n, ns);
+                                return;
+                            }
+                            if (!needType) {
+                                System.Type t = o.GetType();
+                                if (t == typeof(global::SomeClass)) {
+                                }
+                                else {
+                                    throw CreateUnknownTypeException(o);
+                                }
+                            }
+                            WriteStartElement(n, ns, o, false, null);
+                            if (needType) WriteXsiType(@"SomeClass", @"");
+                            WriteEndElement(o);
+                        }
+                        
+                        protected override void InitCallbacks() {
+                        }
                     }
+                    
                 }
+
                 """;
 
             await Verify.RunAsync(new()
