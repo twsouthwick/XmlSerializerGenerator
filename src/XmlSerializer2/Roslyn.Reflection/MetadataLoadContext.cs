@@ -37,11 +37,6 @@ public class MetadataLoadContext
 
     public Type ResolveType(Type type)
     {
-        if (type is RoslynType)
-        {
-            return type;
-        }
-
         var resolvedType = _compilation.GetTypeByMetadataName(type.FullName);
 
         if (resolvedType is not null)
@@ -79,6 +74,12 @@ public class MetadataLoadContext
         if (symbol is null)
         {
             return null;
+        }
+
+        // For now, take the first one
+        if(symbol is IErrorTypeSymbol error)
+        {
+            symbol = error.CandidateSymbols.FirstOrDefault();
         }
 
         return (TMember)_cache.GetOrAdd(symbol, s => s switch

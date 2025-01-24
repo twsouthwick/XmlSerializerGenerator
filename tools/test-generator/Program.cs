@@ -9,6 +9,10 @@ j.Serialize(Console.Out, new MyClass { Value = 5 });
 public class MyClass
 {
     public int Value { get; set; }
+
+    public int Value2 { get; set; }
+
+    public AccessibleRole Role { get; set; }
 }
 
 
