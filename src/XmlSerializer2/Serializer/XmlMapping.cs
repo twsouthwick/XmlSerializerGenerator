@@ -117,9 +117,9 @@ internal abstract class XmlMapping
         }
     }
 
-    internal static bool IsShallow(XmlMapping[] mappings)
+    internal static bool IsShallow(List<XmlMapping> mappings)
     {
-        for (int i = 0; i < mappings.Length; i++)
+        for (int i = 0; i < mappings.Count; i++)
         {
             if (mappings[i] == null || mappings[i]._shallow)
                 return true;

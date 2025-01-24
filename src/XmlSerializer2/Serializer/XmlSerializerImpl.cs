@@ -19,10 +19,10 @@ class XmlSerializerImpl
         if (types.Count == 0)
             return false;
 
-        //if (XmlMapping.IsShallow(mappings))
-        //{
-        //    throw new InvalidOperationException(SR.XmlMelformMapping);
-        //}
+        if (XmlMapping.IsShallow(mappings))
+        {
+            throw new InvalidOperationException(SR.XmlMelformMapping);
+        }
 
         Assembly? assembly = null;
         foreach (Type type in types)
@@ -153,29 +153,29 @@ class XmlSerializerImpl
         writerCodeGen.GenerateEnd();
         writer.WriteLine();
 
-        //string readerClass = $"XmlSerializationReader{suffix}";
-        //readerClass = classes.AddUnique(readerClass, readerClass);
-        //var readerCodeGen = new XmlSerializationReaderCodeGen(writer, scopes, "public", readerClass);
-        //readerCodeGen.GenerateBegin();
-        //string?[] readMethodNames = new string[xmlMappings.Length];
-        //for (int i = 0; i < xmlMappings.Length; i++)
-        //{
-        //    readMethodNames[i] = readerCodeGen.GenerateElement(xmlMappings[i])!;
-        //}
+        string readerClass = $"XmlSerializationReader{suffix}";
+        readerClass = classes.AddUnique(readerClass, readerClass);
+        var readerCodeGen = new XmlSerializationReaderCodeGen(writer, scopes, "public", readerClass);
+        readerCodeGen.GenerateBegin();
+        string?[] readMethodNames = new string[xmlMappings.Count];
+        for (int i = 0; i < xmlMappings.Count; i++)
+        {
+            readMethodNames[i] = readerCodeGen.GenerateElement(xmlMappings[i])!;
+        }
 
-        //readerCodeGen.GenerateEnd();
+        readerCodeGen.GenerateEnd();
 
-        //string baseSerializer = readerCodeGen.GenerateBaseSerializer("XmlSerializer1", readerClass, writerClass, classes);
-        //var serializers = new Hashtable();
-        //for (int i = 0; i < xmlMappings.Length; i++)
-        //{
-        //    if (serializers[xmlMappings[i].GetKey()!] == null)
-        //    {
-        //        serializers[xmlMappings[i].GetKey()!] = readerCodeGen.GenerateTypedSerializer(readMethodNames[i], writeMethodNames[i], xmlMappings[i], classes, baseSerializer, readerClass, writerClass);
-        //    }
-        //}
+        string baseSerializer = readerCodeGen.GenerateBaseSerializer("XmlSerializer1", readerClass, writerClass, classes);
+        var serializers = new Hashtable();
+        for (int i = 0; i < xmlMappings.Count; i++)
+        {
+            if (serializers[xmlMappings[i].Key!] == null)
+            {
+                serializers[xmlMappings[i].Key!] = readerCodeGen.GenerateTypedSerializer(readMethodNames[i], writeMethodNames[i], xmlMappings[i], classes, baseSerializer, readerClass, writerClass);
+            }
+        }
 
-        //readerCodeGen.GenerateSerializerContract(xmlMappings, types!, readerClass, readMethodNames, writerClass, writeMethodNames, serializers);
+        readerCodeGen.GenerateSerializerContract([.. xmlMappings], [.. types], readerClass, readMethodNames, writerClass, writeMethodNames, serializers);
         writer.Indent--;
         writer.WriteLine("}");
 

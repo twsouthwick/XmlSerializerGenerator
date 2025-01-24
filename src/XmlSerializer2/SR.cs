@@ -72,6 +72,7 @@ internal static class SR
     public const string XmlInvalidXsdDataType = nameof(XmlInvalidXsdDataType);
     public const string XmlMelformMapping = nameof(XmlMelformMapping);
     public const string XmlMethodTypeNameConflict = nameof(XmlMethodTypeNameConflict);
+    public const string XmlMissingMethodEnum = nameof(XmlMissingMethodEnum);
     public const string XmlMissingSchema = nameof(XmlMissingSchema);
     public const string XmlMultipleXmlns = nameof(XmlMultipleXmlns);
     public const string XmlMultipleXmlnsMembers = nameof(XmlMultipleXmlnsMembers);
@@ -90,6 +91,7 @@ internal static class SR
     public const string XmlRpcLitElementNullable = nameof(XmlRpcLitElementNullable);
     public const string XmlRpcLitElements = nameof(XmlRpcLitElements);
     public const string XmlRpcLitXmlns = nameof(XmlRpcLitXmlns);
+    public const string XmlSequenceHierarchy = nameof(XmlSequenceHierarchy);
     public const string XmlSequenceInconsistent = nameof(XmlSequenceInconsistent);
     public const string XmlSequenceMatch = nameof(XmlSequenceMatch);
     public const string XmlSequenceMembers = nameof(XmlSequenceMembers);
