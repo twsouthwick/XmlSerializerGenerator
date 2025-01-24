@@ -1,6 +1,6 @@
 # System.Xml.XmlSerializer with Source Generator
 
-This project is to migrate the XmlSerializer generator (sgne) infrastructure to run as a source generator. 
+This project is to migrate the XmlSerializer generator (sgen) infrastructure to run as a source generator. 
 
 ## Challenges
 
