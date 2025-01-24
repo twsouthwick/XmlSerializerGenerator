@@ -8,4 +8,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference 
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false"
+      Include="..\..\src\XmlSerializer2\XmlSerializer2.csproj" />
+  </ItemGroup>
+
 </Project>
