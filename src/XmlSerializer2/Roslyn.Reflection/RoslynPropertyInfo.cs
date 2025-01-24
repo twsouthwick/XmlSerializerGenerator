@@ -38,15 +38,24 @@ namespace Roslyn.Reflection
         {
             throw new NotImplementedException();
         }
+        public override IList<CustomAttributeData> GetCustomAttributesData()
+        {
+            return SharedUtilities.GetCustomAttributesData(_property, _metadataLoadContext);
+        }
 
         public override object[] GetCustomAttributes(bool inherit)
         {
-            throw new NotSupportedException();
+            return _metadataLoadContext.Provider.GetProvider(this).GetCustomAttributes(inherit);
         }
 
         public override object[] GetCustomAttributes(Type attributeType, bool inherit)
         {
-            throw new NotSupportedException();
+            return _metadataLoadContext.Provider.GetProvider(this).GetCustomAttributes(attributeType, inherit);
+        }
+
+        public override bool IsDefined(Type attributeType, bool inherit)
+        {
+            return _metadataLoadContext.Provider.GetProvider(this).IsDefined(attributeType, inherit);
         }
 
         public override MethodInfo GetGetMethod(bool nonPublic)
@@ -73,11 +82,6 @@ namespace Roslyn.Reflection
         public override object GetValue(object obj, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
         {
             throw new NotSupportedException();
-        }
-
-        public override bool IsDefined(Type attributeType, bool inherit)
-        {
-            throw new NotImplementedException();
         }
 
         public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)

@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 using System.Reflection;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Xml.Schema;
+using Roslyn.Reflection;
 
 namespace System.Xml.Serialization;
 

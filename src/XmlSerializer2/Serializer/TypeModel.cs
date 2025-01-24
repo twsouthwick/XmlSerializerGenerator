@@ -211,7 +211,7 @@ internal sealed class FieldModel
         FieldInfo? specifiedField = memberInfo.DeclaringType.GetField($"{memberInfo.Name}Specified");
         if (specifiedField != null)
         {
-            if (specifiedField.FieldType != typeof(bool))
+            if (!specifiedField.FieldType.Equals(typeof(bool)))
             {
                 throw new InvalidOperationException(SR.Format(SR.XmlInvalidSpecifiedType, specifiedField.Name, specifiedField.FieldType.FullName, typeof(bool).FullName));
             }

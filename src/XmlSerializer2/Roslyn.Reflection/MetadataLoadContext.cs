@@ -124,7 +124,8 @@ public class MetadataLoadContext
         private IEnumerable<object> GetCustomAttributes(MemberInfo member, bool inherit)
         {
             // TODO handle inherit
-            return Create(member.GetCustomAttributesData());
+            var data = member.GetCustomAttributesData();
+            return Create(data);
         }
 
         private IEnumerable<object> GetCustomAttributes(MemberInfo member, Type attributeType, bool inherit)

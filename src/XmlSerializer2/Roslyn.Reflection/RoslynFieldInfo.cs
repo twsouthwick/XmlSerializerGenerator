@@ -67,27 +67,27 @@ namespace Roslyn.Reflection
 
         public override Type ReflectedType => throw new NotImplementedException();
 
-        public override object[] GetCustomAttributes(bool inherit)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override object[] GetCustomAttributes(Type attributeType, bool inherit)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override object GetValue(object obj)
-        {
-            throw new NotSupportedException();
-        }
-
         public override IList<CustomAttributeData> GetCustomAttributesData()
         {
             return SharedUtilities.GetCustomAttributesData(_field, _metadataLoadContext);
         }
 
+        public override object[] GetCustomAttributes(bool inherit)
+        {
+            return _metadataLoadContext.Provider.GetProvider(this).GetCustomAttributes(inherit);
+        }
+
+        public override object[] GetCustomAttributes(Type attributeType, bool inherit)
+        {
+            return _metadataLoadContext.Provider.GetProvider(this).GetCustomAttributes(attributeType, inherit);
+        }
+
         public override bool IsDefined(Type attributeType, bool inherit)
+        {
+            return _metadataLoadContext.Provider.GetProvider(this).IsDefined(attributeType, inherit);
+        }
+
+        public override object GetValue(object obj)
         {
             throw new NotSupportedException();
         }

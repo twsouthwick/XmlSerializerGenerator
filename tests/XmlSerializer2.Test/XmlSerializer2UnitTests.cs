@@ -38,17 +38,17 @@ namespace XmlSerializer2.Test
                     
                     public class XmlSerializationWriterSomeClass : System.Xml.Serialization.XmlSerializationWriter {
                         
-                        public void Write4_SomeClass(object o) {
+                        public void Write3_SomeClass(object o) {
                             WriteStartDocument();
                             if (o == null) {
                                 WriteNullTagLiteral(@"SomeClass", @"");
                                 return;
                             }
                             TopLevelElement();
-                            Write3_SomeClass(@"SomeClass", @"", ((global::SomeClass)o), true, false);
+                            Write2_SomeClass(@"SomeClass", @"", ((global::SomeClass)o), true, false);
                         }
                         
-                        void Write3_SomeClass(string n, string ns, global::SomeClass o, bool isNullable, bool needType) {
+                        void Write2_SomeClass(string n, string ns, global::SomeClass o, bool isNullable, bool needType) {
                             if ((object)o == null) {
                                 if (isNullable) WriteNullTagLiteral(n, ns);
                                 return;

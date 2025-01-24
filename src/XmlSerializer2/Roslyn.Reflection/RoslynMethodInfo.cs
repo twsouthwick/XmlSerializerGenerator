@@ -74,12 +74,17 @@ namespace Roslyn.Reflection
 
         public override object[] GetCustomAttributes(bool inherit)
         {
-            throw new NotSupportedException();
+            return _metadataLoadContext.Provider.GetProvider(this).GetCustomAttributes(inherit);
         }
 
         public override object[] GetCustomAttributes(Type attributeType, bool inherit)
         {
-            throw new NotSupportedException();
+            return _metadataLoadContext.Provider.GetProvider(this).GetCustomAttributes(attributeType, inherit);
+        }
+
+        public override bool IsDefined(Type attributeType, bool inherit)
+        {
+            return _metadataLoadContext.Provider.GetProvider(this).IsDefined(attributeType, inherit);
         }
 
         public override Type[] GetGenericArguments()
@@ -114,10 +119,6 @@ namespace Roslyn.Reflection
             throw new NotSupportedException();
         }
 
-        public override bool IsDefined(Type attributeType, bool inherit)
-        {
-            throw new NotSupportedException();
-        }
 
         public override string ToString() => _method.ToString();
     }

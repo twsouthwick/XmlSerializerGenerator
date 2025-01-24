@@ -353,18 +353,18 @@ internal sealed class TypeScope
         if (!type.IsValueType)
             flags |= TypeFlags.Reference;
 
-        if (type == typeof(object))
+        if (type.Equals(typeof(object)))
         {
             kind = TypeKind.Root;
             flags |= TypeFlags.HasDefaultConstructor;
         }
-        else if (type == typeof(ValueType))
+        else if (type.Equals(typeof(ValueType)))
         {
             kind = TypeKind.Enum;
             flags |= TypeFlags.Unsupported;
             exception ??= new NotSupportedException(SR.Format(SR.XmlSerializerUnsupportedType, type.FullName));
         }
-        else if (type == typeof(void))
+        else if (type.Equals(typeof(void)))
         {
             kind = TypeKind.Void;
         }
@@ -391,7 +391,7 @@ internal sealed class TypeScope
             arrayElementType = GetCollectionElementType(type, memberInfo == null ? null : $"{memberInfo.DeclaringType!.FullName}.{memberInfo.Name}");
             flags |= GetConstructorFlags(type);
         }
-        else if (type == typeof(XmlQualifiedName))
+        else if (type.Equals(typeof(XmlQualifiedName)))
         {
             kind = TypeKind.Primitive;
         }
@@ -421,7 +421,7 @@ internal sealed class TypeScope
         }
         else if (type.IsClass)
         {
-            if (type == typeof(XmlAttribute))
+            if (type.Equals(typeof(XmlAttribute)))
             {
                 kind = TypeKind.Attribute;
                 flags |= TypeFlags.Special | TypeFlags.CanBeAttributeValue;
@@ -510,7 +510,7 @@ internal sealed class TypeScope
             }
             typeDesc.ArrayElementTypeDesc = td;
         }
-        if (baseType != null && baseType != typeof(object) && baseType != typeof(ValueType))
+        if (baseType != null && !baseType.Equals(typeof(object)) && !baseType.Equals(typeof(ValueType)))
         {
             typeDesc.BaseTypeDesc = GetTypeDesc(baseType, memberInfo, false, false);
         }
@@ -524,14 +524,14 @@ internal sealed class TypeScope
 
     private static bool IsArraySegment(Type t)
     {
-        return t.IsGenericType && (t.GetGenericTypeDefinition() == typeof(ArraySegment<>));
+        return t.IsGenericType && (t.GetGenericTypeDefinition().Equals(typeof(ArraySegment<>)));
     }
 
     internal static bool IsOptionalValue(Type type)
     {
         if (type.IsGenericType)
         {
-            if (type.GetGenericTypeDefinition() == typeof(Nullable<>).GetGenericTypeDefinition())
+            if (type.GetGenericTypeDefinition().Equals(typeof(Nullable<>).GetGenericTypeDefinition()))
                 return true;
         }
         return false;
