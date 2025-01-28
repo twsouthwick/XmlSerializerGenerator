@@ -41,7 +41,7 @@ namespace Roslyn.Reflection
 
         public override Type BaseType => _typeSymbol.BaseType.AsType(_metadataLoadContext);
 
-        public override string FullName => Namespace is null ? Name : Namespace + "." + Name;
+        public override string FullName => Namespace is { Length: > 0 } ns ? $"{ns}.{Name}" : Name;
 
         public override Guid GUID => Guid.Empty;
 
