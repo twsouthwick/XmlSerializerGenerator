@@ -178,7 +178,7 @@ internal sealed class XmlSerializationWriterCodeGen : XmlSerializationCodeGen
 
 #if DEBUG
         // use exception in the place of Debug.Assert to avoid throwing asserts from a server process such as aspnet_ewp.exe
-        if (methodName == null) throw new InvalidOperationException(SR.Format(SR.XmlInternalErrorMethod, mapping.TypeDesc!.Name) + Environment.StackTrace);
+        if (methodName == null) throw new InvalidOperationException(SR.Format(SR.XmlInternalErrorMethod, mapping.TypeDesc!.Name));
 #endif
 
         Writer.Write(methodName);
@@ -757,7 +757,7 @@ internal sealed class XmlSerializationWriterCodeGen : XmlSerializationCodeGen
 
 #if DEBUG
             // use exception in the place of Debug.Assert to avoid throwing asserts from a server process such as aspnet_ewp.exe
-            if (methodName == null) throw new InvalidOperationException("derived from " + mapping.TypeDesc!.FullName + ", " + SR.Format(SR.XmlInternalErrorMethod, derived.TypeDesc.Name) + Environment.StackTrace);
+            if (methodName == null) throw new InvalidOperationException("derived from " + mapping.TypeDesc!.FullName + ", " + SR.Format(SR.XmlInternalErrorMethod, derived.TypeDesc.Name));
 #endif
 
             Writer.Write(methodName);
@@ -796,7 +796,7 @@ internal sealed class XmlSerializationWriterCodeGen : XmlSerializationCodeGen
 
 #if DEBUG
                     // use exception in the place of Debug.Assert to avoid throwing asserts from a server process such as aspnet_ewp.exe
-                    if (methodName == null) throw new InvalidOperationException(SR.Format(SR.XmlInternalErrorMethod, mapping.TypeDesc.Name) + Environment.StackTrace);
+                    if (methodName == null) throw new InvalidOperationException(SR.Format(SR.XmlInternalErrorMethod, mapping.TypeDesc.Name));
 #endif
                     Writer.WriteLine("Writer.WriteStartElement(n, ns);");
                     Writer.Write("WriteXsiType(");
@@ -1883,7 +1883,7 @@ internal sealed class XmlSerializationWriterCodeGen : XmlSerializationCodeGen
 
 #if DEBUG
                 // use exception in the place of Debug.Assert to avoid throwing asserts from a server process such as aspnet_ewp.exe
-                if (methodName == null) throw new InvalidOperationException(SR.Format(SR.XmlInternalErrorMethod, structMapping.TypeDesc!.Name) + Environment.StackTrace);
+                if (methodName == null) throw new InvalidOperationException(SR.Format(SR.XmlInternalErrorMethod, structMapping.TypeDesc!.Name));
 #endif
                 Writer.Write(methodName);
                 Writer.Write("(");

@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <IsPackable>false</IsPackable>
-    
+
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <IsRoslynComponent>true</IsRoslynComponent>
 
     <Nullable>enable</Nullable>
@@ -35,6 +36,10 @@
   
   <ItemGroup>
     <AdditionalFiles Include="BannedSymbols.txt" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EditorConfigFiles Remove="H:\XmlSerializer2\src\XmlSerializer2\.editorconfig" />
   </ItemGroup>
 
 </Project>

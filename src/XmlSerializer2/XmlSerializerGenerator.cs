@@ -34,11 +34,31 @@ public class XmlSerializerGenerator : IIncrementalGenerator
             .Collect();
         var sourceGenerator = context.CompilationProvider
             .Combine(xmlSerializerCreations)
-            .Select((ctx, token) => Create(ctx.Left, ctx.Right!, token));
+            .Select((ctx, token) =>
+            {
+                try
+                {
+                    return new CompilationCreationInfo(Create(ctx.Left, ctx.Right!, token), null);
+                }
+                catch (Exception e)
+                {
+                    return new CompilationCreationInfo(null, e);
+                }
+            });
         // Register the source output
         context.RegisterSourceOutput(
             sourceGenerator,
-            static (context, content) => context.AddSource("XmlSerializer.g.cs", SourceText.From(content, Encoding.UTF8)));
+            static (context, result) =>
+            {
+                if (result.Exception is not null)
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor("SGEN0001", "XmlSerializerGenerator", $"Error running SGEN: {result.Exception.Message}", "XmlSerializerGenerator", DiagnosticSeverity.Error, true), Location.None));
+                }
+                else if (result.Source is { } source)
+                {
+                    context.AddSource("XmlSerializer.g.cs", SourceText.From(source, Encoding.UTF8));
+                }
+            });
     }
 
     private string Create(Compilation compilation, ImmutableArray<XmlSerializerCreationInfo> infos, CancellationToken token)
@@ -88,7 +108,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
         return null;
     }
 
-    private record CompilationCreationInfo(ImmutableArray<XmlSerializerCreationInfo> Creators);
+    private record CompilationCreationInfo(string? Source, Exception? Exception);
 
     private class XmlSerializerCreationInfo
     {

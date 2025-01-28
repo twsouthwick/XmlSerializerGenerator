@@ -6,7 +6,7 @@ var j = new XmlSerializersGenerated.MyClassSerializer();
 
 j.Serialize(Console.Out, new MyClass { Value = 5 });
 
-public class MyClass
+public class MyClass 
 {
     public int Value { get; set; }
 

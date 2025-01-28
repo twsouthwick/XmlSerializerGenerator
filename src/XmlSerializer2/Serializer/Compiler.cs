@@ -71,9 +71,12 @@ internal sealed class Compiler
         object[] typeForwardedFromAttribute = type.GetCustomAttributes(typeof(TypeForwardedFromAttribute), false);
         if (typeForwardedFromAttribute.Length > 0)
         {
+            throw new InvalidOperationException("Tried to load assembly");
+#if FALSE
             TypeForwardedFromAttribute? originalAssemblyInfo = typeForwardedFromAttribute[0] as TypeForwardedFromAttribute;
             Debug.Assert(originalAssemblyInfo != null);
             Assembly.Load(new AssemblyName(originalAssemblyInfo.AssemblyFullName));
+#endif
         }
     }
 
