@@ -2264,6 +2264,6 @@ internal sealed class XmlSerializationWriterCodeGen : XmlSerializationCodeGen
         }
         if (!useReflection)
             CodeIdentifier2.CheckValidIdentifier(enumValue);
-        return enumValue;
+        return enumValue!;
     }
 }

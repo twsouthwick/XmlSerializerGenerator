@@ -44,15 +44,16 @@ internal class CodeIdentifier2
         return MakeValid(identifier);
     }
 
-    internal static void CheckValidIdentifier(string? ident)
+    internal static void CheckValidIdentifier([NotNull] string? ident)
     {
         // TODO IMPLEMENT
 #if FALSE
         if (!CSharpHelpers.IsValidLanguageIndependentIdentifier(ident))
             throw new ArgumentException(SR.Format(SR.XmlInvalidIdentifier, ident), nameof(ident));
+#endif
 
         Debug.Assert(ident != null);
-#endif
+        ident = string.Empty;
     }
 
     internal static string GetCSharpName(string name)

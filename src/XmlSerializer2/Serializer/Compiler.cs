@@ -89,7 +89,7 @@ internal sealed class Compiler
     {
         return string.IsNullOrEmpty(ns) ?
             $"{parent.Name}.XmlSerializers" :
-            $"{parent.Name}.XmlSerializers.{GetPersistentHashCode(ns)}";
+            $"{parent.Name}.XmlSerializers.{GetPersistentHashCode(ns!)}";
     }
 
     private static readonly SHA256 _sha256 = SHA256.Create();

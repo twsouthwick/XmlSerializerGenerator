@@ -2882,9 +2882,9 @@ internal sealed class XmlSerializationReaderCodeGen : XmlSerializationCodeGen
             Writer.WriteLine(") {");
             Writer.Indent++;
 
-            if (derived.Type != null)
+            if (derived.Type != null && head.Type != null)
             {
-                if (head.Type!.IsAssignableFrom2(derived.Type))
+                if (head.Type.IsAssignableFrom2(derived.Type))
                 {
                     WriteSourceBeginTyped(source, head.TypeDesc);
                     Writer.Write("ReadSerializable(( ");

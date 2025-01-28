@@ -145,7 +145,7 @@ internal abstract class CSharpHelpers
 
         // each char must be Lu, Ll, Lt, Lm, Lo, Nd, Mn, Mc, Pc
         //
-        for (int i = 0; i < value.Length; i++)
+        for (int i = 0; i < value!.Length; i++)
         {
             char ch = value[i];
             UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(ch);
