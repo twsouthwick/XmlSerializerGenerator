@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+#nullable enable
+
 namespace XmlSerializer2;
 
 internal class AttributeProviders
@@ -29,52 +31,22 @@ internal class AttributeProviders
     };
 
     public static object? Create(MetadataLoadContext context, CustomAttributeData data)
+{
+    if (_map.TryGetValue(data.AttributeType.FullName, out var func))
     {
-        if (_map.TryGetValue(data.AttributeType.FullName, out var func))
-        {
-            return func(context, data);
-        }
-
-        return null;
+        return func(context, data);
     }
 
-    private static global::System.ObsoleteAttribute CreateSystem_ObsoleteAttribute(MetadataLoadContext context, CustomAttributeData data)
+    return null;
+}
+
+    private static global::System.ObsoleteAttribute? CreateSystem_ObsoleteAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.ObsoleteAttribute attr = data.ConstructorArguments switch
+        global::System.ObsoleteAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
-        [{ ArgumentType: { } argType0 } arg0, { ArgumentType: { } argType1 } arg1] when argType0.Equals(typeof(global::System.String)) && argType1.Equals(typeof(global::System.Boolean)) => new((global::System.String)arg0.Value, (global::System.Boolean)arg1.Value),
-            _ => null,
-        };
-
-        if (attr is null)
-        {
-            return null;
-        }
-
-#if NET6_OR_GREATER
-        foreach (var named in data.NamedArguments)
-        {
-            if (named.MemberName == nameof(global::System.ObsoleteAttribute.DiagnosticId) && named.TypedValue is { Value: global::System.String named_DiagnosticId })
-            {
-                attr.DiagnosticId = named_DiagnosticId;
-            }
-            else if (named.MemberName == nameof(global::System.ObsoleteAttribute.UrlFormat) && named.TypedValue is { Value: global::System.String named_UrlFormat })
-            {
-                attr.UrlFormat = named_UrlFormat;
-            }
-        }
-#endif
-
-        return attr;
-    }
-
-    private static global::System.Reflection.DefaultMemberAttribute CreateSystem_Reflection_DefaultMemberAttribute(MetadataLoadContext context, CustomAttributeData data)
-    {
-        global::System.Reflection.DefaultMemberAttribute attr = data.ConstructorArguments switch
-        {
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            [] => new(),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            [{ ArgumentType: {} argType0 } arg0, { ArgumentType: {} argType1 } arg1] when argType0.Equals(typeof(global::System.String)) && argType1.Equals(typeof(global::System.Boolean)) => new((global::System.String)arg0.Value, (global::System.Boolean)arg1.Value),
             _ => null,
         };
 
@@ -86,11 +58,27 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Runtime.Serialization.DataContractAttribute CreateSystem_Runtime_Serialization_DataContractAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Reflection.DefaultMemberAttribute? CreateSystem_Reflection_DefaultMemberAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Runtime.Serialization.DataContractAttribute attr = data.ConstructorArguments switch
+        global::System.Reflection.DefaultMemberAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            _ => null,
+        };
+
+        if (attr is null)
+        {
+            return null;
+        }
+
+        return attr;
+    }
+
+    private static global::System.Runtime.Serialization.DataContractAttribute? CreateSystem_Runtime_Serialization_DataContractAttribute(MetadataLoadContext context, CustomAttributeData data)
+    {
+        global::System.Runtime.Serialization.DataContractAttribute? attr = data.ConstructorArguments switch
+        {
+            [] => new(),
             _ => null,
         };
 
@@ -118,11 +106,11 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Runtime.Serialization.DataMemberAttribute CreateSystem_Runtime_Serialization_DataMemberAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Runtime.Serialization.DataMemberAttribute? CreateSystem_Runtime_Serialization_DataMemberAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Runtime.Serialization.DataMemberAttribute attr = data.ConstructorArguments switch
+        global::System.Runtime.Serialization.DataMemberAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
+            [] => new(),
             _ => null,
         };
 
@@ -154,12 +142,12 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Runtime.Serialization.KnownTypeAttribute CreateSystem_Runtime_Serialization_KnownTypeAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Runtime.Serialization.KnownTypeAttribute? CreateSystem_Runtime_Serialization_KnownTypeAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Runtime.Serialization.KnownTypeAttribute attr = data.ConstructorArguments switch
+        global::System.Runtime.Serialization.KnownTypeAttribute? attr = data.ConstructorArguments switch
         {
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.Type)) => new((global::System.Type)arg0.Value),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.Type)) => new((global::System.Type)arg0.Value),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
             _ => null,
         };
 
@@ -171,13 +159,13 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlAnyElementAttribute CreateSystem_Xml_Serialization_XmlAnyElementAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlAnyElementAttribute? CreateSystem_Xml_Serialization_XmlAnyElementAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Xml.Serialization.XmlAnyElementAttribute attr = data.ConstructorArguments switch
+        global::System.Xml.Serialization.XmlAnyElementAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
-        [{ ArgumentType: { } argType0 } arg0, { ArgumentType: { } argType1 } arg1] when argType0.Equals(typeof(global::System.String)) && argType1.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value, (global::System.String)arg1.Value),
+            [] => new(),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            [{ ArgumentType: {} argType0 } arg0, { ArgumentType: {} argType1 } arg1] when argType0.Equals(typeof(global::System.String)) && argType1.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value, (global::System.String)arg1.Value),
             _ => null,
         };
 
@@ -205,12 +193,12 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlArrayAttribute CreateSystem_Xml_Serialization_XmlArrayAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlArrayAttribute? CreateSystem_Xml_Serialization_XmlArrayAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Xml.Serialization.XmlArrayAttribute attr = data.ConstructorArguments switch
+        global::System.Xml.Serialization.XmlArrayAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            [] => new(),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
             _ => null,
         };
 
@@ -246,14 +234,14 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlArrayItemAttribute CreateSystem_Xml_Serialization_XmlArrayItemAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlArrayItemAttribute? CreateSystem_Xml_Serialization_XmlArrayItemAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Xml.Serialization.XmlArrayItemAttribute attr = data.ConstructorArguments switch
+        global::System.Xml.Serialization.XmlArrayItemAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.Type)) => new((global::System.Type)arg0.Value),
-        [{ ArgumentType: { } argType0 } arg0, { ArgumentType: { } argType1 } arg1] when argType0.Equals(typeof(global::System.String)) && argType1.Equals(typeof(global::System.Type)) => new((global::System.String)arg0.Value, (global::System.Type)arg1.Value),
+            [] => new(),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.Type)) => new((global::System.Type)arg0.Value),
+            [{ ArgumentType: {} argType0 } arg0, { ArgumentType: {} argType1 } arg1] when argType0.Equals(typeof(global::System.String)) && argType1.Equals(typeof(global::System.Type)) => new((global::System.String)arg0.Value, (global::System.Type)arg1.Value),
             _ => null,
         };
 
@@ -297,14 +285,14 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlAttributeAttribute CreateSystem_Xml_Serialization_XmlAttributeAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlAttributeAttribute? CreateSystem_Xml_Serialization_XmlAttributeAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Xml.Serialization.XmlAttributeAttribute attr = data.ConstructorArguments switch
+        global::System.Xml.Serialization.XmlAttributeAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.Type)) => new((global::System.Type)arg0.Value),
-        [{ ArgumentType: { } argType0 } arg0, { ArgumentType: { } argType1 } arg1] when argType0.Equals(typeof(global::System.String)) && argType1.Equals(typeof(global::System.Type)) => new((global::System.String)arg0.Value, (global::System.Type)arg1.Value),
+            [] => new(),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.Type)) => new((global::System.Type)arg0.Value),
+            [{ ArgumentType: {} argType0 } arg0, { ArgumentType: {} argType1 } arg1] when argType0.Equals(typeof(global::System.String)) && argType1.Equals(typeof(global::System.Type)) => new((global::System.String)arg0.Value, (global::System.Type)arg1.Value),
             _ => null,
         };
 
@@ -340,12 +328,12 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlChoiceIdentifierAttribute CreateSystem_Xml_Serialization_XmlChoiceIdentifierAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlChoiceIdentifierAttribute? CreateSystem_Xml_Serialization_XmlChoiceIdentifierAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Xml.Serialization.XmlChoiceIdentifierAttribute attr = data.ConstructorArguments switch
+        global::System.Xml.Serialization.XmlChoiceIdentifierAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            [] => new(),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
             _ => null,
         };
 
@@ -365,14 +353,14 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlElementAttribute CreateSystem_Xml_Serialization_XmlElementAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlElementAttribute? CreateSystem_Xml_Serialization_XmlElementAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Xml.Serialization.XmlElementAttribute attr = data.ConstructorArguments switch
+        global::System.Xml.Serialization.XmlElementAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.Type)) => new((global::System.Type)arg0.Value),
-        [{ ArgumentType: { } argType0 } arg0, { ArgumentType: { } argType1 } arg1] when argType0.Equals(typeof(global::System.String)) && argType1.Equals(typeof(global::System.Type)) => new((global::System.String)arg0.Value, (global::System.Type)arg1.Value),
+            [] => new(),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.Type)) => new((global::System.Type)arg0.Value),
+            [{ ArgumentType: {} argType0 } arg0, { ArgumentType: {} argType1 } arg1] when argType0.Equals(typeof(global::System.String)) && argType1.Equals(typeof(global::System.Type)) => new((global::System.String)arg0.Value, (global::System.Type)arg1.Value),
             _ => null,
         };
 
@@ -416,11 +404,11 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlIgnoreAttribute CreateSystem_Xml_Serialization_XmlIgnoreAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlIgnoreAttribute? CreateSystem_Xml_Serialization_XmlIgnoreAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Xml.Serialization.XmlIgnoreAttribute attr = data.ConstructorArguments switch
+        global::System.Xml.Serialization.XmlIgnoreAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
+            [] => new(),
             _ => null,
         };
 
@@ -432,11 +420,11 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlIncludeAttribute CreateSystem_Xml_Serialization_XmlIncludeAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlIncludeAttribute? CreateSystem_Xml_Serialization_XmlIncludeAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Xml.Serialization.XmlIncludeAttribute attr = data.ConstructorArguments switch
+        global::System.Xml.Serialization.XmlIncludeAttribute? attr = data.ConstructorArguments switch
         {
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.Type)) => new((global::System.Type)arg0.Value),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.Type)) => new((global::System.Type)arg0.Value),
             _ => null,
         };
 
@@ -456,12 +444,12 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlRootAttribute CreateSystem_Xml_Serialization_XmlRootAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlRootAttribute? CreateSystem_Xml_Serialization_XmlRootAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Xml.Serialization.XmlRootAttribute attr = data.ConstructorArguments switch
+        global::System.Xml.Serialization.XmlRootAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            [] => new(),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
             _ => null,
         };
 
@@ -493,11 +481,11 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlSchemaProviderAttribute CreateSystem_Xml_Serialization_XmlSchemaProviderAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlSchemaProviderAttribute? CreateSystem_Xml_Serialization_XmlSchemaProviderAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Xml.Serialization.XmlSchemaProviderAttribute attr = data.ConstructorArguments switch
+        global::System.Xml.Serialization.XmlSchemaProviderAttribute? attr = data.ConstructorArguments switch
         {
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
             _ => null,
         };
 
@@ -517,12 +505,12 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlTextAttribute CreateSystem_Xml_Serialization_XmlTextAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlTextAttribute? CreateSystem_Xml_Serialization_XmlTextAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Xml.Serialization.XmlTextAttribute attr = data.ConstructorArguments switch
+        global::System.Xml.Serialization.XmlTextAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.Type)) => new((global::System.Type)arg0.Value),
+            [] => new(),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.Type)) => new((global::System.Type)arg0.Value),
             _ => null,
         };
 
@@ -546,12 +534,12 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlTypeAttribute CreateSystem_Xml_Serialization_XmlTypeAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlTypeAttribute? CreateSystem_Xml_Serialization_XmlTypeAttribute(MetadataLoadContext context, CustomAttributeData data)
     {
-        global::System.Xml.Serialization.XmlTypeAttribute attr = data.ConstructorArguments switch
+        global::System.Xml.Serialization.XmlTypeAttribute? attr = data.ConstructorArguments switch
         {
-        [] => new(),
-        [{ ArgumentType: { } argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
+            [] => new(),
+            [{ ArgumentType: {} argType0 } arg0] when argType0.Equals(typeof(global::System.String)) => new((global::System.String)arg0.Value),
             _ => null,
         };
 

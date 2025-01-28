@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 
 var builder = new Builder();
 
-builder.Add<ObsoleteAttribute>();
+builder.Add<ObsoleteAttribute>(nameof(ObsoleteAttribute.UrlFormat), nameof(ObsoleteAttribute.DiagnosticId));
 builder.Add<XmlAnyElementAttribute>();
 builder.Add<XmlElementAttribute>();
 builder.Add<XmlRootAttribute>();
@@ -55,17 +55,17 @@ static string GetGitDir()
 
 class Builder
 {
-    private readonly SortedList<string, Type> _types = [];
+    private readonly SortedList<string, (Type, string[])> _types = [];
 
-    public void Add<T>()
+    public void Add<T>(params string[] skip)
         where T : Attribute
     {
-        Add(typeof(T));
+        Add(typeof(T), skip);
     }
 
-    private void Add(Type type)
+    private void Add(Type type, params string[] skip)
     {
-        _types.Add(type.FullName!.Replace(".", "_"), type);
+        _types.Add(type.FullName!.Replace(".", "_"), (type, skip));
     }
 
     public void Write(TextWriter writer)
@@ -79,6 +79,8 @@ class Builder
             "System.Reflection"
             ], indented);
 
+        indented.WriteLineNoTabs(string.Empty);
+        indented.WriteLine("#nullable enable");
         indented.WriteLineNoTabs(string.Empty);
         indented.WriteLine("namespace XmlSerializer2;");
         indented.WriteLineNoTabs(string.Empty);
@@ -111,7 +113,7 @@ class Builder
         writer.WriteLine("{");
         writer.Indent++;
 
-        foreach (var (name, type) in _types)
+        foreach (var (name, (type, _)) in _types)
         {
             writer.Write("{ \"");
             writer.Write(type.FullName);
@@ -143,7 +145,7 @@ class Builder
     private void WriteIndented(IndentedTextWriter writer)
     {
         var count = 0;
-        foreach (var (name, type) in _types)
+        foreach (var (name, (type, skip)) in _types)
         {
             if (count > 0)
             {
@@ -153,12 +155,13 @@ class Builder
 
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(p => p.SetMethod is not null)
+                .Where(p => !skip.Contains(p.Name))
                 .ToList();
             var constructors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
 
             writer.Write("private static ");
             WriteFullName(writer, type);
-            writer.Write(" Create");
+            writer.Write("? Create");
             writer.Write(name);
             writer.Write("(MetadataLoadContext context, CustomAttributeData data)");
             writer.WriteLine();
@@ -166,7 +169,7 @@ class Builder
             writer.Indent++;
 
             WriteFullName(writer, type);
-            writer.WriteLine(" attr = data.ConstructorArguments switch");
+            writer.WriteLine("? attr = data.ConstructorArguments switch");
             writer.WriteLine("{");
             writer.Indent++;
 
@@ -207,6 +210,10 @@ class Builder
                         WriteFullName(writer, ps[i].ParameterType);
                         writer.Write(")) ");
                     }
+                }
+                else
+                {
+                    writer.Write(" ");
                 }
 
                 writer.Write("=> new(");
