@@ -24,6 +24,13 @@ namespace Roslyn.Reflection
 
         public MetadataLoadContext MetadataLoadContext => _metadataLoadContext;
 
+        public override MemberInfo[] GetDefaultMembers()
+        {
+            return GetCustomAttributes(true).OfType<DefaultMemberAttribute>()
+                .SelectMany(r => GetMembersInternal(r.MemberName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static))
+                .Where(m => m is PropertyInfo or MethodInfo)
+                .ToArray();
+        }
         public override Assembly Assembly => _typeSymbol switch
         {
             IArrayTypeSymbol => _metadataLoadContext.ResolveType("System.Array").Assembly,
@@ -251,13 +258,24 @@ namespace Roslyn.Reflection
             return interfaces?.ToArray() ?? Array.Empty<Type>();
         }
 
+        public override MemberInfo[] GetMember(string name, BindingFlags bindingAttr)
+            => [.. GetMembersInternal(name, bindingAttr)];
+
         public override MemberInfo[] GetMembers(BindingFlags bindingAttr)
+            => [.. GetMembersInternal(null, bindingAttr)];
+
+        private IEnumerable<MemberInfo> GetMembersInternal(string name, BindingFlags bindingAttr)
         {
-            List<MemberInfo> members = null;
+            if (string.Equals("Item", name, StringComparison.OrdinalIgnoreCase))
+            {
+                name = "this[]";
+            }
 
             foreach (var t in _typeSymbol.BaseTypes())
             {
-                foreach (var symbol in t.GetMembers())
+                var members = string.IsNullOrEmpty(name) ? t.GetMembers() : t.GetMembers(name);
+
+                foreach (var symbol in members)
                 {
                     if (!SharedUtilities.MatchBindingFlags(bindingAttr, _typeSymbol, symbol))
                     {
@@ -278,8 +296,7 @@ namespace Roslyn.Reflection
                         continue;
                     }
 
-                    members ??= new();
-                    members.Add(member);
+                    yield return member;
                 }
             }
 
@@ -292,11 +309,8 @@ namespace Roslyn.Reflection
                     continue;
                 }
 
-                members ??= new();
-                members.Add(type);
+                yield return type;
             }
-
-            return members?.ToArray() ?? Array.Empty<MemberInfo>();
         }
 
         public override MethodInfo[] GetMethods(BindingFlags bindingAttr)

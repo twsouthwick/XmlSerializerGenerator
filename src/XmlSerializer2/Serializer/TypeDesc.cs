@@ -921,7 +921,7 @@ internal sealed class TypeScope
                         if (!defaultProp.CanRead) continue;
                         MethodInfo getMethod = defaultProp.GetMethod!;
                         ParameterInfo[] parameters = getMethod.GetParameters();
-                        if (parameters.Length == 1 && parameters[0].ParameterType == typeof(int))
+                        if (parameters.Length == 1 && parameters[0].ParameterType.Equals(typeof(int)))
                         {
                             indexer = defaultProp;
                             break;

@@ -23,6 +23,7 @@ builder.Add<XmlChoiceIdentifierAttribute>();
 builder.Add<XmlIgnoreAttribute>();
 builder.Add<XmlArrayItemAttribute>();
 builder.Add<KnownTypeAttribute>();
+builder.Add<DefaultMemberAttribute>();
 
 using (var fs = File.OpenWrite(Path.Combine(GetGitDir(), "src", "XmlSerializer2", "AttributeProviders.g.cs")))
 {
@@ -78,6 +79,7 @@ class Builder
             "System.Reflection"
             ], indented);
 
+        indented.WriteLineNoTabs(string.Empty);
         indented.WriteLine("namespace XmlSerializer2;");
         indented.WriteLineNoTabs(string.Empty);
 
@@ -86,6 +88,7 @@ class Builder
         indented.Indent++;
 
         WriteDictionary(indented);
+        WriteMethods(indented);
         WriteIndented(indented);
 
         indented.Indent--;
@@ -119,6 +122,22 @@ class Builder
 
         writer.Indent--;
         writer.WriteLine("};");
+        writer.WriteLineNoTabs(string.Empty);
+    }
+
+    private void WriteMethods(IndentedTextWriter writer)
+    {
+        writer.WriteLine("""
+            public static object? Create(MetadataLoadContext context, CustomAttributeData data)
+            {
+                if (_map.TryGetValue(data.AttributeType.FullName, out var func))
+                {
+                    return func(context, data);
+                }
+
+                return null;
+            }
+            """);
         writer.WriteLineNoTabs(string.Empty);
     }
     private void WriteIndented(IndentedTextWriter writer)
@@ -184,9 +203,9 @@ class Builder
 
                         writer.Write("argType");
                         writer.Write(i);
-                        writer.Write(" == typeof(");
+                        writer.Write(".Equals(typeof(");
                         WriteFullName(writer, ps[i].ParameterType);
-                        writer.Write(") ");
+                        writer.Write(")) ");
                     }
                 }
 
