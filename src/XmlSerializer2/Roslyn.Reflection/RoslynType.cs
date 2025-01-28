@@ -22,7 +22,13 @@ namespace Roslyn.Reflection
             _isByRef = isByRef;
         }
 
-        public override Assembly Assembly => _typeSymbol.ContainingAssembly.AsAssembly(_metadataLoadContext);
+        public MetadataLoadContext MetadataLoadContext => _metadataLoadContext;
+
+        public override Assembly Assembly => _typeSymbol switch
+        {
+            IArrayTypeSymbol => _metadataLoadContext.ResolveType("System.Array").Assembly,
+            _ => _typeSymbol.ContainingAssembly.AsAssembly(_metadataLoadContext)
+        };
 
         public override string AssemblyQualifiedName => throw new NotImplementedException();
 
@@ -34,7 +40,23 @@ namespace Roslyn.Reflection
 
         public override Module Module => new RoslynModule((RoslynAssembly)Assembly);
 
-        public override string Namespace => _typeSymbol.ContainingNamespace?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.Omitted)) is { Length: > 0 } ns ? ns : null;
+        public override string Namespace
+        {
+            get
+            {
+                return GetNamespace(_typeSymbol);
+
+                static string GetNamespace(ITypeSymbol type)
+                {
+                    return type switch
+                    {
+                        IArrayTypeSymbol { ElementType: { } a } => GetNamespace(a),
+                        { ContainingNamespace: { } ns } => ns.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.Omitted)),
+                        _ => null,
+                    };
+                }
+            }
+        }
 
         public override Type UnderlyingSystemType => this;
 

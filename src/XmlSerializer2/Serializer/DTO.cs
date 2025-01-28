@@ -1096,7 +1096,7 @@ internal sealed class SerializableMapping : SpecialMapping
                 return true;
             if (_getSchemaMethod == null)
                 return false;
-            if (_needSchema && typeof(XmlSchemaType).IsAssignableFrom(_getSchemaMethod.ReturnType))
+            if (_needSchema && typeof(XmlSchemaType).IsAssignableFrom2(_getSchemaMethod.ReturnType))
                 return false;
             RetrieveSerializableSchema();
             return _any;
@@ -1188,7 +1188,7 @@ internal sealed class SerializableMapping : SpecialMapping
                 return _xsiType;
             if (_getSchemaMethod == null)
                 return null;
-            if (typeof(XmlSchemaType).IsAssignableFrom(_getSchemaMethod.ReturnType))
+            if (typeof(XmlSchemaType).IsAssignableFrom2(_getSchemaMethod.ReturnType))
                 return null;
             RetrieveSerializableSchema();
             return _xsiType;
@@ -1284,13 +1284,13 @@ internal sealed class SerializableMapping : SpecialMapping
 
                 if (typeInfo != null)
                 {
-                    if (typeof(XmlSchemaType).IsAssignableFrom(_getSchemaMethod.ReturnType))
+                    if (typeof(XmlSchemaType).IsAssignableFrom2(_getSchemaMethod.ReturnType))
                     {
                         _xsdType = (XmlSchemaType)typeInfo;
                         // check if type is named
                         _xsiType = _xsdType.QualifiedName;
                     }
-                    else if (typeof(XmlQualifiedName).IsAssignableFrom(_getSchemaMethod.ReturnType))
+                    else if (typeof(XmlQualifiedName).IsAssignableFrom2(_getSchemaMethod.ReturnType))
                     {
                         _xsiType = (XmlQualifiedName)typeInfo;
                         if (_xsiType.IsEmpty)

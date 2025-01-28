@@ -512,7 +512,7 @@ namespace System.Xml.Serialization
             if (getMethod == null)
                 throw new InvalidOperationException(SR.Format(SR.XmlGetSchemaMethodMissing, provider.MethodName, nameof(XmlSchemaSet), type.FullName));
 
-            if (!(typeof(XmlQualifiedName).IsAssignableFrom(getMethod.ReturnType)) && !(typeof(XmlSchemaType).IsAssignableFrom(getMethod.ReturnType)))
+            if (!(typeof(XmlQualifiedName).IsAssignableFrom2(getMethod.ReturnType)) && !(typeof(XmlSchemaType).IsAssignableFrom2(getMethod.ReturnType)))
                 throw new InvalidOperationException(SR.Format(SR.XmlGetSchemaMethodReturnType, type.Name, provider.MethodName, nameof(XmlSchemaProviderAttribute), typeof(XmlQualifiedName).FullName, typeof(XmlSchemaType).FullName));
 
             return getMethod;
@@ -1695,8 +1695,8 @@ namespace System.Xml.Serialization
                     for (int i = 0; i < a.XmlAnyElements.Count; i++)
                     {
                         XmlAnyElementAttribute xmlAnyElement = a.XmlAnyElements[i]!;
-                        Type targetType = typeof(IXmlSerializable).IsAssignableFrom(arrayElementType) ? arrayElementType : typeof(XmlNode).IsAssignableFrom(arrayElementType) ? arrayElementType : typeof(XmlElement);
-                        if (!arrayElementType.IsAssignableFrom(targetType))
+                        Type targetType = typeof(IXmlSerializable).IsAssignableFrom2(arrayElementType) ? arrayElementType : typeof(XmlNode).IsAssignableFrom2(arrayElementType) ? arrayElementType : typeof(XmlElement);
+                        if (!arrayElementType.IsAssignableFrom2(targetType))
                             throw new InvalidOperationException(SR.Format(SR.XmlIllegalAnyElement, arrayElementType.FullName));
                         string anyName = xmlAnyElement.Name.Length == 0 ? xmlAnyElement.Name : XmlConvert.EncodeLocalName(xmlAnyElement.Name);
                         string? anyNs = xmlAnyElement.GetNamespaceSpecified() ? xmlAnyElement.Namespace : null;
@@ -1936,8 +1936,8 @@ namespace System.Xml.Serialization
                     for (int i = 0; i < a.XmlAnyElements.Count; i++)
                     {
                         XmlAnyElementAttribute xmlAnyElement = a.XmlAnyElements[i]!;
-                        Type targetType = typeof(IXmlSerializable).IsAssignableFrom(accessorType) ? accessorType : typeof(XmlNode).IsAssignableFrom(accessorType) ? accessorType : typeof(XmlElement);
-                        if (!accessorType.IsAssignableFrom(targetType))
+                        Type targetType = typeof(IXmlSerializable).IsAssignableFrom2(accessorType) ? accessorType : typeof(XmlNode).IsAssignableFrom2(accessorType) ? accessorType : typeof(XmlElement);
+                        if (!accessorType.IsAssignableFrom2(targetType))
                             throw new InvalidOperationException(SR.Format(SR.XmlIllegalAnyElement, accessorType.FullName));
 
                         string anyName = xmlAnyElement.Name.Length == 0 ? xmlAnyElement.Name : XmlConvert.EncodeLocalName(xmlAnyElement.Name);

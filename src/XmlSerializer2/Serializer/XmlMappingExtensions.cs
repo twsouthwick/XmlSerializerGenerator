@@ -19,6 +19,14 @@ internal static class XmlMappingExtensions
 
     public static SpecifiedAccessor CheckSpecified(this MemberMapping mapping) => mapping.CheckSpecified;
 
+    [Diagnostics.CodeAnalysis.SuppressMessage("ApiDesign", "RS0030:Do not use banned APIs", Justification = "This method forwards it to IsAssignableFrom to ensure compat with RoslynType")]
+    public static bool IsAssignableFrom2(this Type type, Type other) => (type, other) switch
+    {
+        (RoslynType, _) => type.IsAssignableFrom(other),
+        (not RoslynType, RoslynType r) => r.MetadataLoadContext.ResolveType(type.FullName).IsAssignableFrom(other),
+        _ => type.IsAssignableFrom(other)
+    };
+
     public static XmlQualifiedName GetDerivedFrom(this XmlSchemaType type)
     {
         return type switch

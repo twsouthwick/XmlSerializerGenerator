@@ -913,7 +913,7 @@ internal sealed class XmlSerializationWriterCodeGen : XmlSerializationCodeGen
 
         if (!mapping.TypeDesc.IsAbstract)
         {
-            if (mapping.TypeDesc.Type != null && typeof(XmlSchemaObject).IsAssignableFrom(mapping.TypeDesc.Type))
+            if (mapping.TypeDesc.Type != null && typeof(XmlSchemaObject).IsAssignableFrom2(mapping.TypeDesc.Type))
             {
                 Writer.WriteLine("EscapeName = false;");
             }

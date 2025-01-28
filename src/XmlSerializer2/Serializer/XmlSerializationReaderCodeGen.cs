@@ -1281,7 +1281,7 @@ internal sealed class XmlSerializationReaderCodeGen : XmlSerializationCodeGen
         }
         else
         {
-            if (structMapping.TypeDesc.Type != null && typeof(XmlSchemaObject).IsAssignableFrom(structMapping.TypeDesc.Type))
+            if (structMapping.TypeDesc.Type != null && typeof(XmlSchemaObject).IsAssignableFrom2(structMapping.TypeDesc.Type))
             {
                 Writer.WriteLine("DecodeName = false;");
             }
@@ -2240,7 +2240,7 @@ internal sealed class XmlSerializationReaderCodeGen : XmlSerializationCodeGen
                     {
                         Writer.Write(RaCodeGen.GetStringForTypeof(e.Mapping!.TypeDesc!.CSharpName, e.Mapping.TypeDesc.UseReflection));
                     }
-                    Writer.Write(".IsAssignableFrom(");
+                    Writer.Write(".IsAssignableFrom2(");
                     Writer.Write(checkTypeSource);
                     Writer.Write("Type)");
                 }
@@ -2884,7 +2884,7 @@ internal sealed class XmlSerializationReaderCodeGen : XmlSerializationCodeGen
 
             if (derived.Type != null)
             {
-                if (head.Type!.IsAssignableFrom(derived.Type))
+                if (head.Type!.IsAssignableFrom2(derived.Type))
                 {
                     WriteSourceBeginTyped(source, head.TypeDesc);
                     Writer.Write("ReadSerializable(( ");

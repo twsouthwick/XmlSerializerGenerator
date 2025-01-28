@@ -379,7 +379,7 @@ internal sealed class TypeScope
         {
             kind = TypeKind.Void;
         }
-        else if (typeof(IXmlSerializable).IsAssignableFrom(type))
+        else if (typeof(IXmlSerializable).IsAssignableFrom2(type))
         {
             kind = TypeKind.Serializable;
             flags |= TypeFlags.Special | TypeFlags.CanBeElementValue;
@@ -396,7 +396,7 @@ internal sealed class TypeScope
             arrayElementType = type.GetElementType();
             flags |= TypeFlags.HasDefaultConstructor;
         }
-        else if (typeof(ICollection).IsAssignableFrom(type) && !IsArraySegment(type))
+        else if (typeof(ICollection).IsAssignableFrom2(type) && !IsArraySegment(type))
         {
             kind = TypeKind.Collection;
             arrayElementType = GetCollectionElementType(type, memberInfo == null ? null : $"{memberInfo.DeclaringType!.FullName}.{memberInfo.Name}");
@@ -437,16 +437,16 @@ internal sealed class TypeScope
                 kind = TypeKind.Attribute;
                 flags |= TypeFlags.Special | TypeFlags.CanBeAttributeValue;
             }
-            else if (typeof(XmlNode).IsAssignableFrom(type))
+            else if (typeof(XmlNode).IsAssignableFrom2(type))
             {
                 kind = TypeKind.Node;
                 baseType = type.BaseType;
                 flags |= TypeFlags.Special | TypeFlags.CanBeElementValue | TypeFlags.CanBeTextValue;
-                if (typeof(XmlText).IsAssignableFrom(type))
+                if (typeof(XmlText).IsAssignableFrom2(type))
                     flags &= ~TypeFlags.CanBeElementValue;
-                else if (typeof(XmlElement).IsAssignableFrom(type))
+                else if (typeof(XmlElement).IsAssignableFrom2(type))
                     flags &= ~TypeFlags.CanBeTextValue;
-                else if (type.IsAssignableFrom(typeof(XmlAttribute)))
+                else if (type.IsAssignableFrom2(typeof(XmlAttribute)))
                     flags |= TypeFlags.CanBeAttributeValue;
             }
             else
@@ -488,7 +488,7 @@ internal sealed class TypeScope
         // check if a struct-like type is enumerable
         if (kind == TypeKind.Struct || kind == TypeKind.Class)
         {
-            if (typeof(IEnumerable).IsAssignableFrom(type) && !IsArraySegment(type))
+            if (typeof(IEnumerable).IsAssignableFrom2(type) && !IsArraySegment(type))
             {
                 arrayElementType = GetEnumeratorElementType(type, ref flags);
                 kind = TypeKind.Enumerable;
@@ -598,9 +598,9 @@ internal sealed class TypeScope
             return type.GetElementType();
         else if (IsArraySegment(type))
             return null;
-        else if (typeof(ICollection).IsAssignableFrom(type))
+        else if (typeof(ICollection).IsAssignableFrom2(type))
             return GetCollectionElementType(type, memberInfo);
-        else if (typeof(IEnumerable).IsAssignableFrom(type))
+        else if (typeof(IEnumerable).IsAssignableFrom2(type))
         {
             TypeFlags flags = TypeFlags.None;
             return GetEnumeratorElementType(type, ref flags);
@@ -753,7 +753,7 @@ internal sealed class TypeScope
         Type currentType = derivedType;
         Type typeToBeReplaced = memberInfoToBeReplaced.DeclaringType!;
 
-        if (typeToBeReplaced.IsAssignableFrom(currentType))
+        if (typeToBeReplaced.IsAssignableFrom2(currentType))
         {
             while (currentType != typeToBeReplaced)
             {
@@ -834,18 +834,18 @@ internal sealed class TypeScope
     [RequiresUnreferencedCode("Needs to mark members on the return type of the GetEnumerator method")]
     private static Type? GetEnumeratorElementType(Type type, ref TypeFlags flags)
     {
-        if (typeof(IEnumerable).IsAssignableFrom(type))
+        if (typeof(IEnumerable).IsAssignableFrom2(type))
         {
             MethodInfo? enumerator = type.GetMethod("GetEnumerator", Type.EmptyTypes);
 
-            if (enumerator == null || !typeof(IEnumerator).IsAssignableFrom(enumerator.ReturnType))
+            if (enumerator == null || !typeof(IEnumerator).IsAssignableFrom2(enumerator.ReturnType))
             {
                 // try generic implementation
                 enumerator = null;
                 foreach (MemberInfo member in type.GetMember("System.Collections.Generic.IEnumerable<*", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic))
                 {
                     enumerator = member as MethodInfo;
-                    if (enumerator != null && typeof(IEnumerator).IsAssignableFrom(enumerator.ReturnType))
+                    if (enumerator != null && typeof(IEnumerator).IsAssignableFrom2(enumerator.ReturnType))
                     {
                         // use the first one we find
                         flags |= TypeFlags.GenericInterface;
@@ -863,7 +863,7 @@ internal sealed class TypeScope
                     enumerator = type.GetMethod("System.Collections.IEnumerable.GetEnumerator", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic, null, Type.EmptyTypes, []);
                 }
             }
-            if (enumerator == null || !typeof(IEnumerator).IsAssignableFrom(enumerator.ReturnType))
+            if (enumerator == null || !typeof(IEnumerator).IsAssignableFrom2(enumerator.ReturnType))
             {
                 return null;
             }
@@ -895,7 +895,7 @@ internal sealed class TypeScope
     internal static PropertyInfo GetDefaultIndexer(
         [DynamicallyAccessedMembers(TrimmerConstants.PublicMembers)] Type type, string? memberInfo)
     {
-        if (typeof(IDictionary).IsAssignableFrom(type))
+        if (typeof(IDictionary).IsAssignableFrom2(type))
         {
             if (memberInfo == null)
             {

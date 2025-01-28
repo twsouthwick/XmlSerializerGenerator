@@ -520,7 +520,7 @@ internal sealed class ReflectionAwareCodeGen
             return;
         }
         _writer.Write(GetReflectionVariable(escapedTypeName, null));
-        _writer.Write(".IsAssignableFrom(");
+        _writer.Write(".IsAssignableFrom2(");
         _writer.Write(source);
         _writer.Write(".GetType())");
     }

@@ -12,6 +12,8 @@ public class MyClass
 
     public int Value2 { get; set; }
 
+    public int[] Values { get; set; }
+
     public AccessibleRole Role { get; set; }
 }
 

@@ -1,0 +1,1 @@
+﻿M:System.Type.IsAssignableFrom2(System.Type);Use IsAssignableFrom2 instead
