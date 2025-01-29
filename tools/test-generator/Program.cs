@@ -15,8 +15,7 @@ public class MyClass
     public AccessibleRole Role { get; set; } = AccessibleRole.Alert;
 }
 
-[XmlSerializer(typeof(MyClass))]
+[XmlSerializable(typeof(MyClass))]
 partial class Serializers
 {
 }
-

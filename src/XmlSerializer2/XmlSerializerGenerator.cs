@@ -25,9 +25,9 @@ public class XmlSerializerGenerator : IIncrementalGenerator
             namespace System.Xml.Serialization;
 
             [AttributeUsage(AttributeTargets.Class)]
-            internal sealed class XmlSerializerAttribute : Attribute
+            internal sealed class XmlSerializableAttribute : Attribute
             {
-                public XmlSerializerAttribute(Type type)
+                public XmlSerializableAttribute(Type type)
                 {
                     Type = type;
                 }
@@ -36,13 +36,13 @@ public class XmlSerializerGenerator : IIncrementalGenerator
             }
             """;
 
-            context.AddSource("XmlSerializerAttribute.g.cs", SourceText.From(Source, Encoding.UTF8));
+            context.AddSource("XmlSerializableAttribute.g.cs", SourceText.From(Source, Encoding.UTF8));
         });
 
         // Register a syntax provider to find object creation expressions for XmlSerializer
         var xmlSerializerContext = context.SyntaxProvider
             .ForAttributeWithMetadataName(
-                "System.Xml.Serialization.XmlSerializerAttribute",
+                "System.Xml.Serialization.XmlSerializableAttribute",
                 (node, token) => true,
                 (context, token) =>
                 {
@@ -51,7 +51,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
                     if (context.SemanticModel.GetDeclaredSymbol(context.TargetNode, token) is INamedTypeSymbol typeSymbol)
                     {
                         var types = typeSymbol.GetAttributes()
-                             .Where(a => a.AttributeClass!.Name.Equals("XmlSerializerAttribute"))
+                             .Where(a => a.AttributeClass!.Name.Equals("XmlSerializableAttribute"))
                              .Select(a => a.ConstructorArguments[0].Value)
                              .OfType<INamedTypeSymbol>()
                              .Select(t => t.ToDisplayString())
@@ -208,7 +208,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
         {
             writer.Write("public static global::System.Xml.Serialization.XmlSerializer ");
             writer.Write(serializer.Key);
-            writer.Write(" => new ");
+            writer.Write(" { get; } = new ");
             writer.Write(serializer.Value);
             writer.WriteLine("();");
         }
