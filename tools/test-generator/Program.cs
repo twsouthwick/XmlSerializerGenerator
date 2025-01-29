@@ -1,11 +1,6 @@
-﻿using System.Text.Json.Serialization;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
-var serializer = new System.Xml.Serialization.XmlSerializer(typeof(MyClass));
-
-var j = new XmlSerializersGenerated.MyClassSerializer();
-
-j.Serialize(Console.Out, new MyClass { Value = 5 });
+Serializers.MyClass.Serialize(Console.Out, new MyClass { Value = 5 });
 
 public class MyClass
 {
@@ -17,12 +12,11 @@ public class MyClass
 
     public List<string> Values2 { get; set; } = null!;
 
-    public AccessibleRole Role { get; set; }
+    public AccessibleRole Role { get; set; } = AccessibleRole.Alert;
 }
 
-
-[JsonSerializable(typeof(MyClass))]
-partial class T : JsonSerializerContext
+[XmlSerializer(typeof(MyClass))]
+partial class Serializers
 {
-
 }
+

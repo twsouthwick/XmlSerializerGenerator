@@ -1,19 +1,13 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Operations;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Reflection;
 using System;
 using System.CodeDom.Compiler;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Xml.Serialization;
@@ -25,56 +19,148 @@ public class XmlSerializerGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Register a syntax provider to find object creation expressions for XmlSerializer
-        var xmlSerializerCreations = context.SyntaxProvider
-            .CreateSyntaxProvider(
-                predicate: static (s, _) => IsSyntaxTargetForGeneration(s),
-                transform: static (ctx, token) => GetSemanticTargetForGeneration(ctx, token))
-            .Where(static m => m is not null)
-            .Collect();
-        var sourceGenerator = context.CompilationProvider
-            .Combine(xmlSerializerCreations)
-            .Select((ctx, token) =>
+        context.RegisterPostInitializationOutput(static context =>
+        {
+            const string Source = """
+            namespace System.Xml.Serialization;
+
+            [AttributeUsage(AttributeTargets.Class)]
+            internal sealed class XmlSerializerAttribute : Attribute
             {
-                try
+                public XmlSerializerAttribute(Type type)
                 {
-                    return new CompilationCreationInfo(Create(ctx.Left, ctx.Right!, token), null);
+                    Type = type;
                 }
-                catch (Exception e)
+
+                public Type Type { get; }
+            }
+            """;
+
+            context.AddSource("XmlSerializerAttribute.g.cs", SourceText.From(Source, Encoding.UTF8));
+        });
+
+        // Register a syntax provider to find object creation expressions for XmlSerializer
+        var xmlSerializerContext = context.SyntaxProvider
+            .ForAttributeWithMetadataName(
+                "System.Xml.Serialization.XmlSerializerAttribute",
+                (node, token) => true,
+                (context, token) =>
                 {
-                    return new CompilationCreationInfo(null, e);
+                    var location = context.TargetNode.GetLocation();
+
+                    if (context.SemanticModel.GetDeclaredSymbol(context.TargetNode, token) is INamedTypeSymbol typeSymbol)
+                    {
+                        var types = typeSymbol.GetAttributes()
+                             .Where(a => a.AttributeClass!.Name.Equals("XmlSerializerAttribute"))
+                             .Select(a => a.ConstructorArguments[0].Value)
+                             .OfType<INamedTypeSymbol>()
+                             .Select(t => t.ToDisplayString())
+                             .ToImmutableArray();
+
+                        var ns = typeSymbol.ContainingNamespace is { IsGlobalNamespace: false } n ? n.ToDisplayString() : null;
+
+                        return (Info)new CreateInfo(location, ns, GetContainingClasses(typeSymbol), types);
+                    }
+
+                    return (Info)new ErrorInfo(location, "XML serialization generator must have a partial method with no parameters");
+
+                    static ImmutableArray<string> GetContainingClasses(INamedTypeSymbol c)
+                    {
+                        var containingClasses = ImmutableArray.CreateBuilder<string>();
+
+                        while (c is not null)
+                        {
+                            containingClasses.Add(c.Name);
+                            c = c.ContainingType;
+                        }
+
+                        return containingClasses.ToImmutable();
+                    }
+                })
+            .Collect();
+
+        var sourceGenerator = context.CompilationProvider
+            .Combine(xmlSerializerContext)
+            .SelectMany((ctx, token) =>
+            {
+                var result = new List<Result>();
+
+                foreach (var info in ctx.Right)
+                {
+                    if (info is ErrorInfo e)
+                    {
+                        result.Add(new ErrorResult(e.Location, e.ErrorMessage));
+                    }
+                    else if (info is CreateInfo c)
+                    {
+                        try
+                        {
+                            var source = Create(ctx.Left, c, token);
+
+                            result.Add(new SourceResult(GetFileName(c), source));
+                        }
+                        catch (Exception ex)
+                        {
+                            result.Add(new ErrorResult(c.Location, ex.Message));
+                        }
+                    }
+                }
+
+                return result;
+
+                static string GetFileName(CreateInfo c)
+                {
+                    var sb = new StringBuilder();
+
+                    if (!string.IsNullOrEmpty(c.Namespace))
+                    {
+                        sb.Append(c.Namespace);
+                        sb.Append('_');
+                    }
+
+                    foreach (var cl in c.ClassNames)
+                    {
+                        sb.Append(cl);
+                        sb.Append('_');
+                    }
+
+                    sb.Append("XmlSerializers");
+
+                    return sb.ToString();
                 }
             });
+
         // Register the source output
         context.RegisterSourceOutput(
             sourceGenerator,
             static (context, result) =>
             {
-                if (result.Exception is not null)
+                if (result is ErrorResult e)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor("SGEN0001", "XmlSerializerGenerator", $"Error running SGEN: {result.Exception.Message}", "XmlSerializerGenerator", DiagnosticSeverity.Error, true), Location.None));
+                    context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor("SGEN0001", "XmlSerializerGenerator", $"Error running SGEN: {e.Message}", "XmlSerializerGenerator", DiagnosticSeverity.Error, true), e.Location));
                 }
-                else if (result.Source is { } source)
+                else if (result is SourceResult s)
                 {
-                    context.AddSource("XmlSerializer.g.cs", SourceText.From(source, Encoding.UTF8));
+                    context.AddSource($"{s.Name}.g.cs", SourceText.From(s.Contents, Encoding.UTF8));
                 }
             });
     }
 
-    private string Create(Compilation compilation, ImmutableArray<XmlSerializerCreationInfo> infos, CancellationToken token)
+    private string Create(Compilation compilation, CreateInfo info, CancellationToken token)
     {
         var metadataContext = new MetadataLoadContext(compilation);
         var r = new XmlReflectionImporter2(metadataContext);
         var types = new List<Type>();
         var mappings = new List<XmlMapping>();
 
-        foreach (var info in infos)
+        foreach (var t in info.Types)
         {
-            var type = metadataContext.ResolveType(info.FullyQualifiedName);
-            mappings.Add(r.ImportTypeMapping(type));
+            var type = metadataContext.ResolveType(t);
+            var mapping = r.ImportTypeMapping(type);
+            mapping.SetKey(type.Name);
+            mappings.Add(mapping);
             types.Add(type);
         }
-
 
         using var sw = new StringWriter();
 
@@ -90,57 +176,63 @@ public class XmlSerializerGenerator : IIncrementalGenerator
         sw.WriteLine();
 
         var writer = new IndentedTextWriter(sw);
-        XmlSerializerImpl.GenerateSerializer(types, mappings, writer);
+
+        if (!string.IsNullOrEmpty(info.Namespace))
+        {
+            writer.WriteLine($"namespace {info.Namespace};");
+            writer.WriteLineNoTabs(string.Empty);
+        }
+
+        var serializers = XmlSerializerImpl.GenerateSerializer(types, mappings, writer);
+
+        if (serializers is { })
+        {
+            WritePartialImplementation(writer, info, serializers);
+        }
 
         var s = sw.ToString();
         return s;
     }
 
-    private static bool IsSyntaxTargetForGeneration(SyntaxNode node)
+    private void WritePartialImplementation(IndentedTextWriter writer, CreateInfo info, Dictionary<string, string> serializers)
     {
-        // We are looking for object creation expressions
-        return node is ObjectCreationExpressionSyntax;
-    }
-
-    private static XmlSerializerCreationInfo? GetSemanticTargetForGeneration(GeneratorSyntaxContext context, CancellationToken token)
-    {
-        // We are looking for object creation expressions for XmlSerializer
-        if (context.SemanticModel.GetOperation(context.Node, token) is not IObjectCreationOperation objectCreation)
+        foreach (var c in info.ClassNames)
         {
-            return null;
+            writer.Write("partial class ");
+            writer.WriteLine(c);
+            writer.WriteLine("{");
+            writer.Indent++;
         }
 
-        if (objectCreation.Type?.ToDisplayString() == "System.Xml.Serialization.XmlSerializer" && objectCreation.Arguments is [{ Value: ITypeOfOperation { TypeOperand: { } type } }])
+        foreach (var serializer in serializers)
         {
-            var location = context.Node.GetLocation();
-            var fullyQualifiedName = type.ToDisplayString();
-            return new XmlSerializerCreationInfo(location, fullyQualifiedName);
+            writer.Write("public static global::System.Xml.Serialization.XmlSerializer ");
+            writer.Write(serializer.Key);
+            writer.Write(" => new ");
+            writer.Write(serializer.Value);
+            writer.WriteLine("();");
         }
 
-        return null;
-    }
-
-    private record CompilationCreationInfo(string? Source, Exception? Exception);
-
-    private class XmlSerializerCreationInfo
-    {
-        public Location Location { get; }
-
-        public string FullyQualifiedName { get; }
-
-        public List<XmlSerializerTypeInfo> Types { get; } = [];
-
-        public XmlSerializerCreationInfo(Location location, string fullyQualifiedName)
+        foreach (var c in info.ClassNames)
         {
-            Location = location;
-            FullyQualifiedName = fullyQualifiedName;
+            writer.Indent--;
+            writer.Write("}");
         }
     }
 
-    private record class XmlSerializerTypeInfo
-    {
-        public required string Name { get; init; }
+    private abstract record Result();
 
-        public bool IsArray { get; init; }
-    }
+    private record ErrorResult(Location Location, string Message) : Result;
+
+    private record SourceResult(string Name, string Contents) : Result;
+
+    private abstract record Info(Location Location);
+
+    private record CreateInfo(
+        Location Location,
+        string? Namespace,
+        ImmutableArray<string> ClassNames,
+        ImmutableArray<string> Types) : Info(Location);
+
+    private record ErrorInfo(Location Location, string ErrorMessage) : Info(Location);
 }

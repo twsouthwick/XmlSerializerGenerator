@@ -354,8 +354,7 @@ internal sealed class EnumModel : TypeModel
         if (fieldInfo.IsSpecialName) return null;
 
         // Use a default value here
-        //return new ConstantModel(fieldInfo, ((IConvertible)fieldInfo.GetValue(null)!).ToInt64(null));
-        return new ConstantModel(fieldInfo, 0);
+        return new ConstantModel(fieldInfo, ((IConvertible)fieldInfo.GetValue(null)!).ToInt64(null));
     }
 }
 

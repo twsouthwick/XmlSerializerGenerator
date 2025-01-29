@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -199,7 +200,7 @@ internal class XmlSerializationCodeGen
         baseSerializer = classes.AddUnique(baseSerializer, baseSerializer);
 
         _writer.WriteLine();
-        _writer.Write("public abstract class ");
+        _writer.Write("file abstract class ");
         _writer.Write(CodeIdentifier2.GetCSharpName(baseSerializer));
         _writer.Write(" : ");
         _writer.Write(typeof(System.Xml.Serialization.XmlSerializer).FullName);
@@ -238,7 +239,7 @@ internal class XmlSerializationCodeGen
         serializerName = classes.AddUnique($"{serializerName}Serializer", mapping);
 
         _writer.WriteLine();
-        _writer.Write("public sealed class ");
+        _writer.Write("file sealed class ");
         _writer.Write(CodeIdentifier2.GetCSharpName(serializerName));
         _writer.Write(" : ");
         _writer.Write(baseSerializer);
@@ -309,7 +310,7 @@ internal class XmlSerializationCodeGen
         return serializerName;
     }
 
-    private void GenerateTypedSerializers(Hashtable serializers)
+    private void GenerateTypedSerializers(Dictionary<string, string> serializers)
     {
         string privateName = "typedSerializers";
         GenerateHashtableGetBegin(privateName, "TypedSerializers");
@@ -326,7 +327,7 @@ internal class XmlSerializationCodeGen
     }
 
     //GenerateGetSerializer(serializers, xmlMappings);
-    private void GenerateGetSerializer(Hashtable serializers, XmlMapping[] xmlMappings)
+    private void GenerateGetSerializer(Dictionary<string, string> serializers, XmlMapping[] xmlMappings)
     {
         _writer.Write("public override ");
         _writer.Write(typeof(System.Xml.Serialization.XmlSerializer).FullName);
@@ -360,10 +361,10 @@ internal class XmlSerializationCodeGen
         _writer.WriteLine("}");
     }
 
-    internal void GenerateSerializerContract(XmlMapping[] xmlMappings, Type?[] types, string readerType, string?[] readMethods, string writerType, string?[] writerMethods, Hashtable serializers)
+    internal void GenerateSerializerContract(XmlMapping[] xmlMappings, Type?[] types, string readerType, string?[] readMethods, string writerType, string?[] writerMethods, Dictionary<string, string> serializers)
     {
         _writer.WriteLine();
-        _writer.Write("public class XmlSerializerContract : global::");
+        _writer.Write("file class XmlSerializerContract : global::");
         _writer.Write(typeof(System.Xml.Serialization.XmlSerializerImplementation).FullName);
         _writer.WriteLine(" {");
         _writer.Indent++;
