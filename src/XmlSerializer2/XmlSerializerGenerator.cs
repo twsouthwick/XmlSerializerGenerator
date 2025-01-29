@@ -24,7 +24,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
             const string Source = """
             namespace System.Xml.Serialization;
 
-            [AttributeUsage(AttributeTargets.Class)]
+            [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
             internal sealed class XmlSerializableAttribute : Attribute
             {
                 public XmlSerializableAttribute(Type type)
