@@ -11,9 +11,9 @@ namespace Roslyn.Reflection
     internal class RoslynMethodInfo : MethodInfo
     {
         private readonly IMethodSymbol _method;
-        private readonly MetadataLoadContext _metadataLoadContext;
+        private readonly RoslynMetadataLoadContext _metadataLoadContext;
 
-        public RoslynMethodInfo(IMethodSymbol method, MetadataLoadContext metadataLoadContext)
+        public RoslynMethodInfo(IMethodSymbol method, RoslynMetadataLoadContext metadataLoadContext)
         {
             _method = method;
             _metadataLoadContext = metadataLoadContext;

@@ -20,9 +20,9 @@ namespace Roslyn.Reflection
 
     internal class RoslynAssembly : Assembly
     {
-        private readonly MetadataLoadContext _metadataLoadContext;
+        private readonly RoslynMetadataLoadContext _metadataLoadContext;
 
-        public RoslynAssembly(IAssemblySymbol assembly, MetadataLoadContext metadataLoadContext)
+        public RoslynAssembly(IAssemblySymbol assembly, RoslynMetadataLoadContext metadataLoadContext)
         {
             Symbol = assembly;
             _metadataLoadContext = metadataLoadContext;

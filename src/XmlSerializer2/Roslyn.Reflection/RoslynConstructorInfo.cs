@@ -10,9 +10,9 @@ namespace Roslyn.Reflection
     internal class RoslynConstructorInfo : ConstructorInfo
     {
         private readonly IMethodSymbol _ctor;
-        private readonly MetadataLoadContext _metadataLoadContext;
+        private readonly RoslynMetadataLoadContext _metadataLoadContext;
 
-        public RoslynConstructorInfo(IMethodSymbol ctor, MetadataLoadContext metadataLoadContext)
+        public RoslynConstructorInfo(IMethodSymbol ctor, RoslynMetadataLoadContext metadataLoadContext)
         {
             _ctor = ctor;
             _metadataLoadContext = metadataLoadContext;

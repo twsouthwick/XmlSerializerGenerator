@@ -11,18 +11,18 @@ namespace Roslyn.Reflection
     internal class RoslynType : Type
     {
         private readonly ITypeSymbol _typeSymbol;
-        private readonly MetadataLoadContext _metadataLoadContext;
+        private readonly RoslynMetadataLoadContext _metadataLoadContext;
         private readonly bool _isByRef;
         private TypeAttributes? _typeAttributes;
 
-        public RoslynType(ITypeSymbol typeSymbol, MetadataLoadContext metadataLoadContext, bool isByRef = false)
+        public RoslynType(ITypeSymbol typeSymbol, RoslynMetadataLoadContext metadataLoadContext, bool isByRef = false)
         {
             _typeSymbol = typeSymbol;
             _metadataLoadContext = metadataLoadContext;
             _isByRef = isByRef;
         }
 
-        public MetadataLoadContext MetadataLoadContext => _metadataLoadContext;
+        public RoslynMetadataLoadContext MetadataLoadContext => _metadataLoadContext;
 
         public override MemberInfo[] GetDefaultMembers()
         {

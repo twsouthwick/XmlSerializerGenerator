@@ -9,7 +9,7 @@ namespace Roslyn.Reflection
 {
     internal class RoslynCustomAttributeData : CustomAttributeData
     {
-        public RoslynCustomAttributeData(AttributeData a, MetadataLoadContext metadataLoadContext)
+        public RoslynCustomAttributeData(AttributeData a, RoslynMetadataLoadContext metadataLoadContext)
         {
             if (a.AttributeConstructor is null)
             {

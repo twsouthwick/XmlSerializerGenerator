@@ -10,10 +10,10 @@ namespace Roslyn.Reflection
     internal class RoslynFieldInfo : FieldInfo
     {
         private readonly IFieldSymbol _field;
-        private readonly MetadataLoadContext _metadataLoadContext;
+        private readonly RoslynMetadataLoadContext _metadataLoadContext;
         private FieldAttributes? _attributes;
 
-        public RoslynFieldInfo(IFieldSymbol parameter, MetadataLoadContext metadataLoadContext)
+        public RoslynFieldInfo(IFieldSymbol parameter, RoslynMetadataLoadContext metadataLoadContext)
         {
             _field = parameter;
             _metadataLoadContext = metadataLoadContext;

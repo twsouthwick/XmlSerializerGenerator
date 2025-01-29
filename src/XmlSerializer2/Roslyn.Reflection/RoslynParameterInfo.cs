@@ -9,9 +9,9 @@ namespace Roslyn.Reflection
     public class RoslynParameterInfo : ParameterInfo
     {
         private readonly IParameterSymbol _parameter;
-        private readonly MetadataLoadContext _metadataLoadContext;
+        private readonly RoslynMetadataLoadContext _metadataLoadContext;
 
-        public RoslynParameterInfo(IParameterSymbol parameter, MetadataLoadContext metadataLoadContext)
+        public RoslynParameterInfo(IParameterSymbol parameter, RoslynMetadataLoadContext metadataLoadContext)
         {
             _parameter = parameter;
             _metadataLoadContext = metadataLoadContext;

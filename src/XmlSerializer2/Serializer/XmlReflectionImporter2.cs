@@ -40,7 +40,7 @@ namespace System.Xml.Serialization
         private StructMapping? _root;
         private readonly string _defaultNs;
         private readonly ModelScope _modelScope;
-        private readonly MetadataLoadContext _context;
+        private readonly RoslynMetadataLoadContext _context;
         private int _arrayNestingLevel;
         private XmlArrayItemAttributes? _savedArrayItemAttributes;
         private string? _savedArrayNamespace;
@@ -56,7 +56,7 @@ namespace System.Xml.Serialization
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>
-        public XmlReflectionImporter2(MetadataLoadContext context)
+        public XmlReflectionImporter2(RoslynMetadataLoadContext context)
         {
             _context = context;
             _defaultNs = string.Empty;

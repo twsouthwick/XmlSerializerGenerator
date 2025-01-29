@@ -8,7 +8,7 @@ namespace Roslyn.Reflection
 {
     internal class SharedUtilities
     {
-        public static IList<CustomAttributeData> GetCustomAttributesData(ISymbol symbol, MetadataLoadContext metadataLoadContext)
+        public static IList<CustomAttributeData> GetCustomAttributesData(ISymbol symbol, RoslynMetadataLoadContext metadataLoadContext)
         {
             List<CustomAttributeData> attributes = default;
             foreach (var a in symbol.GetAttributes())

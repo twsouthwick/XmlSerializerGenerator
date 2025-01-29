@@ -9,7 +9,7 @@ namespace XmlSerializer2;
 
 internal class AttributeProviders
 {
-    private static readonly Dictionary<string, Func<MetadataLoadContext, CustomAttributeData, object?>> _map = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, Func<RoslynMetadataLoadContext, CustomAttributeData, object?>> _map = new(StringComparer.OrdinalIgnoreCase)
     {
         { "System.ObsoleteAttribute", CreateSystem_ObsoleteAttribute },
         { "System.Reflection.DefaultMemberAttribute", CreateSystem_Reflection_DefaultMemberAttribute },
@@ -30,7 +30,7 @@ internal class AttributeProviders
         { "System.Xml.Serialization.XmlTypeAttribute", CreateSystem_Xml_Serialization_XmlTypeAttribute },
     };
 
-    public static object? Create(MetadataLoadContext context, CustomAttributeData data)
+    public static object? Create(RoslynMetadataLoadContext context, CustomAttributeData data)
 {
     if (_map.TryGetValue(data.AttributeType.FullName, out var func))
     {
@@ -40,7 +40,7 @@ internal class AttributeProviders
     return null;
 }
 
-    private static global::System.ObsoleteAttribute? CreateSystem_ObsoleteAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.ObsoleteAttribute? CreateSystem_ObsoleteAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.ObsoleteAttribute? attr = data.ConstructorArguments switch
         {
@@ -58,7 +58,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Reflection.DefaultMemberAttribute? CreateSystem_Reflection_DefaultMemberAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Reflection.DefaultMemberAttribute? CreateSystem_Reflection_DefaultMemberAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Reflection.DefaultMemberAttribute? attr = data.ConstructorArguments switch
         {
@@ -74,7 +74,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Runtime.Serialization.DataContractAttribute? CreateSystem_Runtime_Serialization_DataContractAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Runtime.Serialization.DataContractAttribute? CreateSystem_Runtime_Serialization_DataContractAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Runtime.Serialization.DataContractAttribute? attr = data.ConstructorArguments switch
         {
@@ -106,7 +106,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Runtime.Serialization.DataMemberAttribute? CreateSystem_Runtime_Serialization_DataMemberAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Runtime.Serialization.DataMemberAttribute? CreateSystem_Runtime_Serialization_DataMemberAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Runtime.Serialization.DataMemberAttribute? attr = data.ConstructorArguments switch
         {
@@ -142,7 +142,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Runtime.Serialization.KnownTypeAttribute? CreateSystem_Runtime_Serialization_KnownTypeAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Runtime.Serialization.KnownTypeAttribute? CreateSystem_Runtime_Serialization_KnownTypeAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Runtime.Serialization.KnownTypeAttribute? attr = data.ConstructorArguments switch
         {
@@ -159,7 +159,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlAnyElementAttribute? CreateSystem_Xml_Serialization_XmlAnyElementAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlAnyElementAttribute? CreateSystem_Xml_Serialization_XmlAnyElementAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Xml.Serialization.XmlAnyElementAttribute? attr = data.ConstructorArguments switch
         {
@@ -193,7 +193,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlArrayAttribute? CreateSystem_Xml_Serialization_XmlArrayAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlArrayAttribute? CreateSystem_Xml_Serialization_XmlArrayAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Xml.Serialization.XmlArrayAttribute? attr = data.ConstructorArguments switch
         {
@@ -234,7 +234,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlArrayItemAttribute? CreateSystem_Xml_Serialization_XmlArrayItemAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlArrayItemAttribute? CreateSystem_Xml_Serialization_XmlArrayItemAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Xml.Serialization.XmlArrayItemAttribute? attr = data.ConstructorArguments switch
         {
@@ -285,7 +285,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlAttributeAttribute? CreateSystem_Xml_Serialization_XmlAttributeAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlAttributeAttribute? CreateSystem_Xml_Serialization_XmlAttributeAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Xml.Serialization.XmlAttributeAttribute? attr = data.ConstructorArguments switch
         {
@@ -328,7 +328,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlChoiceIdentifierAttribute? CreateSystem_Xml_Serialization_XmlChoiceIdentifierAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlChoiceIdentifierAttribute? CreateSystem_Xml_Serialization_XmlChoiceIdentifierAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Xml.Serialization.XmlChoiceIdentifierAttribute? attr = data.ConstructorArguments switch
         {
@@ -353,7 +353,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlElementAttribute? CreateSystem_Xml_Serialization_XmlElementAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlElementAttribute? CreateSystem_Xml_Serialization_XmlElementAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Xml.Serialization.XmlElementAttribute? attr = data.ConstructorArguments switch
         {
@@ -404,7 +404,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlIgnoreAttribute? CreateSystem_Xml_Serialization_XmlIgnoreAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlIgnoreAttribute? CreateSystem_Xml_Serialization_XmlIgnoreAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Xml.Serialization.XmlIgnoreAttribute? attr = data.ConstructorArguments switch
         {
@@ -420,7 +420,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlIncludeAttribute? CreateSystem_Xml_Serialization_XmlIncludeAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlIncludeAttribute? CreateSystem_Xml_Serialization_XmlIncludeAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Xml.Serialization.XmlIncludeAttribute? attr = data.ConstructorArguments switch
         {
@@ -444,7 +444,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlRootAttribute? CreateSystem_Xml_Serialization_XmlRootAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlRootAttribute? CreateSystem_Xml_Serialization_XmlRootAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Xml.Serialization.XmlRootAttribute? attr = data.ConstructorArguments switch
         {
@@ -481,7 +481,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlSchemaProviderAttribute? CreateSystem_Xml_Serialization_XmlSchemaProviderAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlSchemaProviderAttribute? CreateSystem_Xml_Serialization_XmlSchemaProviderAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Xml.Serialization.XmlSchemaProviderAttribute? attr = data.ConstructorArguments switch
         {
@@ -505,7 +505,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlTextAttribute? CreateSystem_Xml_Serialization_XmlTextAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlTextAttribute? CreateSystem_Xml_Serialization_XmlTextAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Xml.Serialization.XmlTextAttribute? attr = data.ConstructorArguments switch
         {
@@ -534,7 +534,7 @@ internal class AttributeProviders
         return attr;
     }
 
-    private static global::System.Xml.Serialization.XmlTypeAttribute? CreateSystem_Xml_Serialization_XmlTypeAttribute(MetadataLoadContext context, CustomAttributeData data)
+    private static global::System.Xml.Serialization.XmlTypeAttribute? CreateSystem_Xml_Serialization_XmlTypeAttribute(RoslynMetadataLoadContext context, CustomAttributeData data)
     {
         global::System.Xml.Serialization.XmlTypeAttribute? attr = data.ConstructorArguments switch
         {

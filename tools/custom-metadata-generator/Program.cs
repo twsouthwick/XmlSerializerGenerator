@@ -109,7 +109,7 @@ class Builder
 
     private void WriteDictionary(IndentedTextWriter writer)
     {
-        writer.WriteLine("private static readonly Dictionary<string, Func<MetadataLoadContext, CustomAttributeData, object?>> _map = new(StringComparer.OrdinalIgnoreCase)");
+        writer.WriteLine("private static readonly Dictionary<string, Func<RoslynMetadataLoadContext, CustomAttributeData, object?>> _map = new(StringComparer.OrdinalIgnoreCase)");
         writer.WriteLine("{");
         writer.Indent++;
 
@@ -130,7 +130,7 @@ class Builder
     private void WriteMethods(IndentedTextWriter writer)
     {
         writer.WriteLine("""
-            public static object? Create(MetadataLoadContext context, CustomAttributeData data)
+            public static object? Create(RoslynMetadataLoadContext context, CustomAttributeData data)
             {
                 if (_map.TryGetValue(data.AttributeType.FullName, out var func))
                 {
@@ -163,7 +163,7 @@ class Builder
             WriteFullName(writer, type);
             writer.Write("? Create");
             writer.Write(name);
-            writer.Write("(MetadataLoadContext context, CustomAttributeData data)");
+            writer.Write("(RoslynMetadataLoadContext context, CustomAttributeData data)");
             writer.WriteLine();
             writer.WriteLine("{");
             writer.Indent++;

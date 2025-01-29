@@ -10,9 +10,9 @@ namespace Roslyn.Reflection
     internal class RoslynPropertyInfo : PropertyInfo
     {
         private readonly IPropertySymbol _property;
-        private readonly MetadataLoadContext _metadataLoadContext;
+        private readonly RoslynMetadataLoadContext _metadataLoadContext;
 
-        public RoslynPropertyInfo(IPropertySymbol property, MetadataLoadContext metadataLoadContext)
+        public RoslynPropertyInfo(IPropertySymbol property, RoslynMetadataLoadContext metadataLoadContext)
         {
             _property = property;
             _metadataLoadContext = metadataLoadContext;
