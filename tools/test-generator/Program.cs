@@ -1,21 +1,51 @@
-﻿using System.Xml.Serialization;
+﻿using System.Collections;
 
-Serializers.MyClass.Serialize(Console.Out, new MyClass { Value = 5 });
-
-public class MyClass
+foreach (var data in typeof(Employees).GetCustomAttributesData())
 {
-    public int Value { get; set; }
-
-    public int Value2 { get; set; }
-
-    public int[] Values { get; set; } = null!;
-
-    public List<string> Values2 { get; set; } = null!;
-
-    public AccessibleRole Role { get; set; } = AccessibleRole.Alert;
+    Console.WriteLine(data.AttributeType.ToString());
 }
 
-[XmlSerializable(typeof(MyClass))]
-partial class Serializers
+[Repro.MyAttr(typeof(Employees))]
+public class Test
 {
+}
+
+public class Employees : ICollection
+{
+    public string? CollectionName;
+    private ArrayList empArray = new ArrayList();
+
+    public Employee? this[int index] => (Employee?)empArray[index];
+
+    public void CopyTo(Array a, int index)
+    {
+        empArray.CopyTo(a, index);
+    }
+
+    public int Count => empArray.Count;
+
+    public object SyncRoot => this;
+
+    public bool IsSynchronized => false;
+
+    public IEnumerator GetEnumerator() => empArray.GetEnumerator();
+
+    public void Add(Employee newEmployee)
+    {
+        empArray.Add(newEmployee);
+    }
+}
+
+public class Employee
+{
+    public string? EmpName;
+    public string? EmpID;
+
+    public Employee() { }
+
+    public Employee(string empName, string empID)
+    {
+        EmpName = empName;
+        EmpID = empID;
+    }
 }

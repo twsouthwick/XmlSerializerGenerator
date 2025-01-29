@@ -23,9 +23,29 @@ internal sealed class RoslynMetadataCustomAttributeProvider(RoslynMetadataLoadCo
 
     private IEnumerable<object> GetCustomAttributes(MemberInfo member, bool inherit)
     {
-        // TODO handle inherit
-        var data = member.GetCustomAttributesData();
-        return Create(data);
+        var queue = new Queue<MemberInfo>();
+        queue.Enqueue(member);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            var data = current.GetCustomAttributesData();
+
+            foreach (var attr in Create(data))
+            {
+                yield return attr;
+            }
+
+            if (current is Type t)
+            {
+                queue.Enqueue(t.BaseType);
+
+                foreach (var i in t.GetInterfaces())
+                {
+                    queue.Enqueue(i);
+                }
+            }
+        }
     }
 
     private IEnumerable<object> GetCustomAttributes(MemberInfo member, Type attributeType, bool inherit)

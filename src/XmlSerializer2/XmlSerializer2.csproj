@@ -38,8 +38,4 @@
     <AdditionalFiles Include="BannedSymbols.txt" />
   </ItemGroup>
   
-  <ItemGroup>
-    <EditorConfigFiles Remove="H:\XmlSerializer2\src\XmlSerializer2\.editorconfig" />
-  </ItemGroup>
-
 </Project>

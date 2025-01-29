@@ -26,6 +26,7 @@ namespace Roslyn.Reflection
 
         public override MemberInfo[] GetDefaultMembers()
         {
+            var a = _typeSymbol.GetAttributes();
             return GetCustomAttributes(true).OfType<DefaultMemberAttribute>()
                 .SelectMany(r => GetMembersInternal(r.MemberName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static))
                 .Where(m => m is PropertyInfo or MethodInfo)
