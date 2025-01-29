@@ -89,6 +89,11 @@ namespace Roslyn.Reflection
 
         public override object GetValue(object obj)
         {
+            if (obj is null && _field.HasConstantValue)
+            {
+                return _field.ConstantValue;
+            }
+
             throw new NotSupportedException();
         }
 
