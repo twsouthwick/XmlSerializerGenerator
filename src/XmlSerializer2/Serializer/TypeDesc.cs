@@ -347,12 +347,16 @@ internal sealed class TypeScope
         TypeFlags flags = 0;
         Exception? exception = null;
 
+        // We can handle internal types with the source generator
+#if FALSE
         if (!type.IsVisible)
         {
             flags |= TypeFlags.Unsupported;
             exception = new InvalidOperationException(SR.Format(SR.XmlTypeInaccessible, type.FullName));
         }
-        else if (directReference && (type.IsAbstract && type.IsSealed))
+        else 
+#endif
+        if (directReference && (type.IsAbstract && type.IsSealed))
         {
             flags |= TypeFlags.Unsupported;
             exception = new InvalidOperationException(SR.Format(SR.XmlTypeStatic, type.FullName));

@@ -4,7 +4,7 @@
 Serializers.MyClass.Serialize(Console.Out, new MyClass { Value = 5 });
 
 // POCO to be serialized
-public class MyClass
+class MyClass
 {
     public int Value { get; set; }
 
