@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Runtime.InteropServices;
+
 using Verify = XmlSerializer2.Test.SourceVerifier;
 
 namespace XmlSerializer2.Test;
@@ -21,13 +21,12 @@ public class XmlSerializer2UnitTest
               }
               """,
             expected: """"
-                <?xml version="1.0" encoding="utf-16"?>
-                <Test xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                  <Value>5</Value>
-                </Test>
-                """"
-
-                );
+              <?xml version="1.0" encoding="utf-16"?>
+              <Test xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                <Value>5</Value>
+              </Test>
+              """"
+              );
     }
 
     [TestMethod]
@@ -91,14 +90,14 @@ public class XmlSerializer2UnitTest
               }
               """,
             expected: """
-                <?xml version="1.0" encoding="utf-16"?>
-                <ArrayOfEmployee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                  <Employee>
-                    <EmpName>John</EmpName>
-                    <EmpID>100xxx</EmpID>
-                  </Employee>
-                </ArrayOfEmployee>
-                """
+              <?xml version="1.0" encoding="utf-16"?>
+              <ArrayOfEmployee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                <Employee>
+                  <EmpName>John</EmpName>
+                  <EmpID>100xxx</EmpID>
+                </Employee>
+              </ArrayOfEmployee>
+              """
             );
     }
 }
