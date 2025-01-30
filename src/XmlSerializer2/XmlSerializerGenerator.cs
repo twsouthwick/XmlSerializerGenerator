@@ -52,7 +52,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
                     {
                         var types = typeSymbol.GetAttributes()
                              .Where(a => a.AttributeClass!.Name.Equals("XmlSerializableAttribute"))
-                             .Select(a => a.ConstructorArguments[0].Value)
+                             .Select(a => a.ConstructorArguments is [{ Value: INamedTypeSymbol type }] ? type : null)
                              .OfType<INamedTypeSymbol>()
                              .Select(t => t.ToDisplayString())
                              .ToImmutableArray();
