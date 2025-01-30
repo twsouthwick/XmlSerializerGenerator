@@ -175,7 +175,7 @@ class XmlSerializerImpl
             }
         }
 
-        readerCodeGen.GenerateSerializerContract([.. xmlMappings], [.. types], readerClass, readMethodNames, writerClass, writeMethodNames, serializers);
+        readerCodeGen.GenerateSerializerContract([.. xmlMappings], [.. types!], readerClass, readMethodNames, writerClass, writeMethodNames, serializers);
 
         return serializers;
     }
