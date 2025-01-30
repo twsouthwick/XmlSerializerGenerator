@@ -41,6 +41,8 @@ partial class Serializers
 
 ## Try it out
 
-The `tools/test-generator` project is hooked up to run the analyzer and with the latest VS versions, it will automatically reload if there are changes.
+The `samples/test-generator` project is hooked up to run the analyzer and with the latest VS versions, it will automatically reload if there are changes.
 
 ![](docs/screenshot.png)
+
+You can launch the `src/XmlSerializer2` project to debug into the source generator.

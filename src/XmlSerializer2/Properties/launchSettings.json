@@ -2,7 +2,7 @@
   "profiles": {
     "Debug Roslyn": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "..\\..\\tools\\test-generator\\test-generator.csproj"
+      "targetProject": "..\\..\\samples\\test-generator\\test-generator.csproj"
     }
   }
 }
