@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 #nullable disable
 namespace Roslyn.Reflection
@@ -26,10 +28,22 @@ namespace Roslyn.Reflection
 
         public override MemberInfo[] GetDefaultMembers()
         {
-            return GetCustomAttributes(true).OfType<DefaultMemberAttribute>()
-                .SelectMany(r => GetMembersInternal(r.MemberName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static))
-                .Where(m => m is PropertyInfo or MethodInfo)
-                .ToArray();
+            var defaultMember = GetCustomAttributes(true).OfType<DefaultMemberAttribute>().FirstOrDefault();
+
+            if (defaultMember is { })
+            {
+                return GetMembersInternal(defaultMember.MemberName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                    .Where(m => m is PropertyInfo or MethodInfo)
+                    .ToArray();
+            }
+            else
+            {
+                return _typeSymbol.GetMembers()
+                    .OfType<IPropertySymbol>()
+                    .Where(p => p.IsIndexer)
+                    .Select(Convert)
+                    .ToArray();
+            }
         }
         public override Assembly Assembly => _typeSymbol switch
         {
@@ -205,6 +219,11 @@ namespace Roslyn.Reflection
                     continue;
                 }
 
+                if (!string.Equals(name, fieldSymbol.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
                 return fieldSymbol.AsFieldInfo(_metadataLoadContext);
             }
 
@@ -282,14 +301,7 @@ namespace Roslyn.Reflection
                         continue;
                     }
 
-                    MemberInfo member = symbol switch
-                    {
-                        IFieldSymbol f => f.AsFieldInfo(_metadataLoadContext),
-                        IPropertySymbol p => p.AsPropertyInfo(_metadataLoadContext),
-                        IMethodSymbol c when c.MethodKind == MethodKind.Constructor => c.AsConstructorInfo(_metadataLoadContext),
-                        IMethodSymbol m => m.AsMethodInfo(_metadataLoadContext),
-                        _ => null
-                    };
+                    MemberInfo member = Convert(symbol);
 
                     if (member is null)
                     {
@@ -312,6 +324,15 @@ namespace Roslyn.Reflection
                 yield return type;
             }
         }
+
+        private MemberInfo Convert(ISymbol symbol) => symbol switch
+        {
+            IFieldSymbol f => f.AsFieldInfo(_metadataLoadContext),
+            IPropertySymbol p => p.AsPropertyInfo(_metadataLoadContext),
+            IMethodSymbol c when c.MethodKind == MethodKind.Constructor => c.AsConstructorInfo(_metadataLoadContext),
+            IMethodSymbol m => m.AsMethodInfo(_metadataLoadContext),
+            _ => null
+        };
 
         public override MethodInfo[] GetMethods(BindingFlags bindingAttr)
         {
