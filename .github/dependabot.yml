@@ -9,6 +9,24 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      MicrosoftCodeAnalysis:
+        patterns:
+          - "Microsoft.CodeAnalysis.*"
+          - "System.CodeDom"
+      MicrosoftExtensions:
+        patterns:
+          - "Microsoft.Extensions.*"
+      Testing:
+        patterns:
+          - "Microsoft.Testing.*"
+          - "MSTest"
+
+  - package-ecosystem: "dotnet-sdk"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
 
   - package-ecosystem: "github-actions"
     # Workflow files stored in the default location of `.github/workflows`. (You don't need to specify `/.github/workflows` for `directory`. You can use `directory: "/"`.)
@@ -16,10 +34,7 @@ updates:
     schedule:
       # Check for updates to GitHub Actions every weekday
       interval: "daily"
-
-  - package-ecosystem: "dotnet-sdk"
-    # Workflow files stored in the default location of `.github/workflows`. (You don't need to specify `/.github/workflows` for `directory`. You can use `directory: "/"`.)
-    directory: "/"
-    schedule:
-      # Check for updates to GitHub Actions every weekday
-      interval: "daily"
+    groups:
+      all:
+        patterns:
+          - "*"
