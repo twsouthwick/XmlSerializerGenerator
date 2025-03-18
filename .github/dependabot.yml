@@ -21,6 +21,7 @@ updates:
         patterns:
           - "Microsoft.Testing.*"
           - "MSTest"
+          - "MSTest.*"
 
   - package-ecosystem: "dotnet-sdk"
     directory: "/"
