@@ -204,6 +204,24 @@ public class XmlSerializerGenerator : IIncrementalGenerator
             writer.Indent++;
         }
 
+        writer.WriteLine("public static global::System.Xml.Serialization.XmlSerializer Get(Type type)");
+        writer.WriteLine("{");
+        writer.Indent++;
+
+        foreach (var serializer in serializers)
+        {
+            writer.Write("if (type == typeof(");
+            writer.Write(serializer.Key);
+            writer.Write(")) return ");
+            writer.Write(serializer.Key);
+            writer.WriteLine(";");
+        }
+
+        writer.WriteLine("return null;");
+        writer.Indent--;
+        writer.WriteLine("}");
+        writer.WriteLineNoTabs(string.Empty);
+
         foreach (var serializer in serializers)
         {
             writer.Write("public static global::System.Xml.Serialization.XmlSerializer ");

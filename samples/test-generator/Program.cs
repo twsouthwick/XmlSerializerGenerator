@@ -3,6 +3,9 @@
 // Utilize the generated serializer
 Serializers.MyClass.Serialize(Console.Out, new MyClass { Value = 5 });
 
+// Get a serializer
+Serializers.Get(typeof(MyClass)).Serialize(Console.Out, new MyClass { Value = 5 });
+
 // POCO to be serialized
 class MyClass
 {
