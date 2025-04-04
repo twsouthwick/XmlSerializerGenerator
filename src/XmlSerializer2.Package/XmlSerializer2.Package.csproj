@@ -29,12 +29,8 @@
 
   <ItemGroup>
     <None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
+    <None Update="build\*" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="*.props" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
-    <None Update="*.targets" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
-  </ItemGroup>
-
 
   <Target Name="_AddAnalyzersToOutput">
     <ItemGroup>
