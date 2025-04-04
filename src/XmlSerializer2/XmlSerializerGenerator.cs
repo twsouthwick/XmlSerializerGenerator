@@ -429,7 +429,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
 
     private abstract record Result();
 
-    private record ErrorResult(Location Location, string Message) : Result;
+    private record ErrorResult(Location? Location, string Message) : Result;
 
     private record SourceResult(string Name, string Contents) : Result;
 
