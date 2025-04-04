@@ -220,7 +220,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
                 try
                 {
                     var temp = new StringWriter();
-                    var serializers = Create(new IndentedTextWriter(temp), ctx.Left, types, token);
+                    var serializers = WriteSerializers(new IndentedTextWriter(temp), ctx.Left, types, token);
 
                     if (serializers is { })
                     {
@@ -281,7 +281,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
                 });
     }
 
-    private Dictionary<string, string>? Create(IndentedTextWriter writer, Compilation compilation, IEnumerable<string> desiredTypes, CancellationToken token)
+    private Dictionary<string, string>? WriteSerializers(IndentedTextWriter writer, Compilation compilation, IEnumerable<string> desiredTypes, CancellationToken token)
     {
         var metadataContext = new RoslynMetadataLoadContext(compilation);
         var r = new XmlReflectionImporter2(metadataContext);
@@ -337,7 +337,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
         writer.WriteLine("{");
         writer.Indent++;
 
-        writer.WriteLine("internal static class InterceptedCalls");
+        writer.WriteLine("file static class InterceptedCalls");
         writer.WriteLine("{");
         writer.Indent++;
 
