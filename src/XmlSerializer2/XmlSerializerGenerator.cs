@@ -238,7 +238,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
                             namespace System.Runtime.CompilerServices
                             {
                                 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-                                file sealed class InterceptsLocationAttribute(int version, string data) : Attribute
+                                file sealed class InterceptsLocationAttribute(int version, string data) : System.Attribute
                                 {
                                 }
                             }
@@ -361,7 +361,7 @@ public class XmlSerializerGenerator : IIncrementalGenerator
 
     private void WriteGetMethod(IndentedTextWriter writer, string name, Dictionary<string, string> serializers)
     {
-        writer.WriteLine($"public static global::System.Xml.Serialization.XmlSerializer {name}(Type type)");
+        writer.WriteLine($"public static global::System.Xml.Serialization.XmlSerializer {name}(global::System.Type type)");
         writer.WriteLine("{");
         writer.Indent++;
 
