@@ -341,15 +341,16 @@ public class XmlSerializerGenerator : IIncrementalGenerator
         writer.WriteLine("{");
         writer.Indent++;
 
-        foreach (var intercept in intercepts)
+        foreach (var group in intercepts.GroupBy(i => i.TypeName))
         {
-            writer.Write("[global::System.Runtime.CompilerServices.InterceptsLocation(");
-            writer.Write(intercept.InterceptedLocation.Version);
-            writer.Write(", \"");
-            writer.Write(intercept.InterceptedLocation.Data);
-            writer.WriteLine("\")]");
+            foreach (var intercept in group)
+            {
+                writer.Write("// ");
+                writer.WriteLine(intercept.InterceptedLocation.GetDisplayLocation());
+                writer.WriteLine(intercept.InterceptedLocation.GetInterceptsLocationAttributeSyntax());
+            }
 
-            WriteGetMethod(writer, $"Get_{intercept.TypeName}", serializers);
+            WriteGetMethod(writer, $"Get_{group.Key}", serializers);
         }
 
         writer.Indent--;

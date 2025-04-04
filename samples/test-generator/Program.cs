@@ -7,6 +7,7 @@
 Serializers.Get(typeof(MyClass)).Serialize(Console.Out, new MyClass { Value = 5 });
 
 Test.Get(typeof(MyClass)).Serialize(Console.Out, new MyClass { Value = 5 });
+Test.Get(typeof(MyClass)).Serialize(Console.Out, new MyClass { Value = 5 });
 
 Console.ReadLine();
 
