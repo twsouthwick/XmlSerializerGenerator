@@ -1,12 +1,24 @@
 ﻿using System.Xml.Serialization;
 
-// Utilize the generated serializer
-Serializers.MyClass.Serialize(Console.Out, new MyClass { Value = 5 });
+// Register an override that calls will be intercepted for
+[assembly: XmlSerializerOverride(typeof(Test), nameof(Test.Get))]
 
-// Get a serializer
+//// Get a serializer
 Serializers.Get(typeof(MyClass)).Serialize(Console.Out, new MyClass { Value = 5 });
 
-// POCO to be serialized
+Test.Get(typeof(MyClass)).Serialize(Console.Out, new MyClass { Value = 5 });
+
+Console.ReadLine();
+
+class Test
+{
+    public static XmlSerializer Get(Type type)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+//// POCO to be serialized
 class MyClass
 {
     public int Value { get; set; }

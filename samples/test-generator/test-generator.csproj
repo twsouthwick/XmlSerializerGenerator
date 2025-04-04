@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="../../src/XmlSerializer2.Package/Swick.XmlSerializer.Generator.props"/>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0-windows</TargetFramework>
@@ -8,13 +8,16 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- Can be provided by this property or an attribute in the project -->
+    <!--<SgenMethodOverride>Test.Get(System.Type)</SgenMethodOverride>-->
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference 
+    <ProjectReference
       OutputItemType="Analyzer"
       ReferenceOutputAssembly="false"
       Include="..\..\src\XmlSerializer2\XmlSerializer2.csproj" />
   </ItemGroup>
 
+  <Import Project="../../src/XmlSerializer2.Package/Swick.XmlSerializer.Generator.targets"/>
 </Project>

@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);XmlSerializersGenerated</InterceptorsNamespaces>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CompilerVisibleProperty Include="SgenMethodOverride" />
+  </ItemGroup>
+</Project>
